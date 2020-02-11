@@ -63,6 +63,9 @@ In order to track the command trace and request trace that are scheduled from an
 *  Printing the request trace:
 
        Enable -DREQ_TRACE_ENABLED
+# Develop a New MC
+To develop a new memory controller in MCsim, you need to write your imeplemetation in the system directory. This depend on which level you want to implement your code (requestScheduler, commandScheduler, or/and commandGenerator). Then, you need to specify your system.ini file which describe the structure of queues/address mapping and etc.
+
 
 # Address Mapping Configuration
 Since the sample memory traces are generated without considering allocating to individual rank and bank, the user is supposed to manually reconfigure the address location in the AddressMapping class. The configuration is done through MAKEFILE compile options as follows:
