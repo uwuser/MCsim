@@ -1,98 +1,63 @@
-#ifndef REQUESTSCHEDULER_FRFCFS_H
-#define REQUESTSCHEDULER_FRFCFS_H
+#ifndef REQUESTSCHEDULER_FRFCFS_Batching_H
+#define REQUESTSCHEDULER_FRFCFS_Batching_H
 
 #include "../src/RequestScheduler.h"
 
 using namespace std;
 
-namespace MCsim
-{
-	class RequestScheduler_FRFCFS: public RequestScheduler{
+namespace MCsim{
+	class RequestScheduler_FRFCFS_Batching: public RequestScheduler{
 	private:
-
 	public:
-
-		RequestScheduler_FRFCFS(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable): 
+		RequestScheduler_FRFCFS_Batching(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable): 
 			RequestScheduler(requestQueues, commandQueues, requestorTable){
 		}
+		// Simple FR FCFS scheduler in the Request Queueu structure
 		void requestSchedule(){
-			Request* tempRequest = NULL;
-
-			bool writeQueue = writeEnable(0);
-			bool cont_1 = true;
-			bool cont_3 = true;
-			bool cont_2 = false;
-			bool sw = false;
-			if(writeQueue)
-			{
-				RequestQueue::WriteQueue* writeQ = NULL;
-				for(unsigned int index=0; index < requestQueue.size(); index++) {
-					writeQ = requestQueue[index]->writeQueue;
-					if( writeQ != NULL) {
-						if(writeQ->highWatermark()) {
-							sw = true;
-							for(unsigned int qIndex=0; qIndex < writeQ->bufferSize(); qIndex++) {
-								tempRequest = writeQ->getWrite(qIndex);
-								if(isRowHit(tempRequest)) {
-									if(isSchedulable(tempRequest, true)) {
-										writeQ->popWrite(qIndex);
-										cont_1 = false;
-									}
-								}
-							}
-						}
-						if(sw)
-						{
-							int qIndex = 0;
-							while(!writeQ->lowWatermark()) {
-								tempRequest = writeQ->getWrite(qIndex);
-								if(isSchedulable(tempRequest, isRowHit(tempRequest))) {
-									updateRowTable(tempRequest->addressMap[Rank], tempRequest->addressMap[Bank], tempRequest->row);
-									writeQ->popWrite(qIndex);
-									cont_1 = false;
-								}
-								qIndex++;
-							}
-						}	
-					}
-				}
-			}
-			if(cont_1)
-			{
-				for(size_t index = 0; index < requestQueue.size(); index++)
-				{
-					scheduledRequest = scheduleFR(index); 
+			// Loop over the queueing structure
+			for(size_t index = 0; index < requestQueue.size(); index++){
+				if(requestQueue[index]->getSize(false,0) > 0){
+					//cout<<"request queue is greater than zero"<<endl;
+					// Take the candidate request from the correspoding queue
+					scheduledRequest = scheduleFR(index); 	
+					//cout<<"done with schedulerFR "<<endl;
 					if(scheduledRequest != NULL){
-						if(isSchedulable(scheduledRequest,isRowHit(scheduledRequest))){
+						// Determine if the request target is an open row or not
+						if(isSchedulable(scheduledRequest,FR_open)){
+							// Update the open row table for the device
 							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);
-							requestQueue[index]->removeRequest();
-							cont_3 = false;
+							// Remove the request that has been choosed
+							bool WriteEnabled = requestQueue[0]->isWriteEnable();
+							if(!WriteEnabled){
+								requestQueue[index]->removeRequest();
+							}
+							else
+							{
+								if(scheduledRequest->requestType == DATA_READ){													
+								requestQueue[index]->removeRequest();
+								}
+								else
+								{						
+									requestQueue[index]->removeWriteRequest();	
+								}
+							}	
 						}
 					}
+					//cout<<"request is picked in FRFCFS"<<endl;	
 				}
+				if(switch_enable && requestQueue[index]->writeSize() > 0 && requestQueue[0]->isWriteEnable()){
+					scheduledRequest = requestQueue[index]->scheduleWritecheck();
+					if(scheduledRequest != NULL){
+						if(isSchedulable(scheduledRequest,FR_open)){
+							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);
+							requestQueue[index]->removeWriteRequest();
+						}
+					}		
+				}
+				scheduledRequest = NULL;
 			}
-			for(unsigned int index=0; index < commandQueue.size(); index++){
-				if (commandQueue[index]->getSize(true) > 0){
-					cont_2 = true;
-				}
-				
-			}
-			if(!cont_2 && cont_1 && cont_3){				
-				RequestQueue::WriteQueue* writeQ = NULL;
-				writeQ = requestQueue[0]->writeQueue;
-				if(writeQ->bufferSize() != 0)
-				{
-					tempRequest = writeQ->getWrite(0);
-					if(isSchedulable(tempRequest, isRowHit(tempRequest))) {
-						updateRowTable(tempRequest->addressMap[Rank], tempRequest->addressMap[Bank], tempRequest->row);
-						writeQ->popWrite(0);
-						cont_2 = false;
-					}
-				}
-			}	
-			scheduledRequest = NULL;
 		}
 	};
 }
-#endif
 
+#endif
