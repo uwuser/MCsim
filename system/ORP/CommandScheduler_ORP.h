@@ -17,7 +17,7 @@ namespace MCsim
 		{
 			commandQueue[0]->setACT(0);
 		}
-		~CommandScheduler_ORP()
+		~CommandScheduler_ORP() // dtor
 		{
 			for(auto it=cmdFIFO.begin(); it!=cmdFIFO.end(); it++) {
 				delete it->first;
@@ -119,4 +119,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* COMMANDSCHEDULER_ORP_H */

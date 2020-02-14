@@ -124,9 +124,8 @@ namespace MCsim
 									compensateCommands[indexHP].erase(compensateCommands[indexHP].begin());
 									bypass = true;
 								}
-						}
-					// Round Robin Indexer
-					indexHP++;
+						}					
+					indexHP++; // Round Robin Indexer
 					if(indexHP == commandQueue.size()) {indexHP = 0;}
 					if(scheduledCommand != NULL) {break;}
 					}
@@ -143,4 +142,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* COMMANDSCHEDULER_MAG_H */

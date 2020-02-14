@@ -4,7 +4,6 @@
 #include "MemorySystem.h"
 #include "global.h"
 
-// using namespace std;
 using namespace MCsim;
 
 CommandScheduler::CommandScheduler(
@@ -29,8 +28,7 @@ requestorCriticalTable(requestorTable)
 }
 CommandScheduler::~CommandScheduler()
 {
-	cmdQueueTimer.clear();
-	// delete refreshMachine;
+	cmdQueueTimer.clear();	
 }
 void CommandScheduler::connectMemorySystem(MemorySystem* memSys)
 {
@@ -39,18 +37,18 @@ void CommandScheduler::connectMemorySystem(MemorySystem* memSys)
 	banks = memorySystem->get_Bank();
 	refreshMachine = new RefreshMachine(commandQueue, ranks, banks, getTiming("tREFI"), getTiming("tRFC"));
 }
-// Accsess the Ramulator backend to determine the timing specifications
-unsigned int CommandScheduler::getTiming(const string& param)
+
+unsigned int CommandScheduler::getTiming(const string& param) // Accsess the Ramulator backend to determine the timing specifications
 {
 	return memorySystem->get_constraints(param);
 }
-// Perform refresh
-bool CommandScheduler::refreshing()
+
+bool CommandScheduler::refreshing() // Perform refresh
 {
 	return refreshMachine->refreshing();
 }
-// Indicator of reaching refresh interval
-void CommandScheduler::refresh()
+
+void CommandScheduler::refresh() // Indicator of reaching refresh interval
 {
 	BusPacket* tempCmd = NULL;
 	refreshMachine->refresh(tempCmd);
@@ -59,16 +57,13 @@ void CommandScheduler::refresh()
 			memorySystem->receiveFromBus(tempCmd);
 			refreshMachine->popCommand();
 			
-		}
-		else
-		{
-		}		
+		}	
 	}
 	tempCmd = NULL;
 	delete tempCmd;
 }
-// Each command queue share the same command ready time
-bool CommandScheduler::isReady(BusPacket* cmd, unsigned int index)
+
+bool CommandScheduler::isReady(BusPacket* cmd, unsigned int index) // Each command queue share the same command ready time
 {
 	if(commandQueue[index]->isPerRequestor()) {
 		if(reqCmdQueueTimer[index].find(cmd->requestorID) == reqCmdQueueTimer[index].end()) {
@@ -95,13 +90,13 @@ bool CommandScheduler::isReady(BusPacket* cmd, unsigned int index)
 	}
 	return true;
 }
-// Check if the command is issueable on the channel
-bool CommandScheduler::isIssuable(BusPacket* cmd)
+
+bool CommandScheduler::isIssuable(BusPacket* cmd) // Check if the command is issueable on the channel
 {
 	return memorySystem->command_check(cmd);
 }
-// Send the actual command to the device
-void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypass)
+
+void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypass) // Send the actual command to the device
 {
 	// Update command counter
 	if(commandQueue[index]->isPerRequestor()) {
@@ -163,7 +158,7 @@ void CommandScheduler::commandClear()
 	delete scheduledCommand;
 	scheduledCommand = NULL;
 }
-// Tick the scheduler
+
 void CommandScheduler::tick()
 {
 	// Countdown command ready timer
@@ -191,6 +186,3 @@ void CommandScheduler::tick()
 	refreshMachine->step();
 	clock++;
 }
-
-
-

@@ -95,7 +95,6 @@ namespace MCsim
 		unsigned int queueNumber(vector<unsigned int>& queueMap);
 		unsigned int decodeQueue(const unsigned int (&addressMap)[4], vector<unsigned int>& queueMap);
 		
-
 		// Statistics
 		struct Statistics{
 			unsigned long long totalRequest;
@@ -113,17 +112,10 @@ namespace MCsim
 			unsigned long long openWrite_Latency;
 			unsigned long long closeRead_Latency;
 			unsigned long long closeWrite_Latency;
-
 			bool closeRequest;
-
-			long long int WCopenread;
-			long long int WCcloseread;
-			long long int WCclosewrite;
-			long long int WCopenwrite;			
 		} stats;
 		ofstream myTrace;
 	};
 }
 
-#endif
-
+#endif /* MEMORYCONTROLLER_H */

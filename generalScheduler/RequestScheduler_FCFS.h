@@ -12,21 +12,17 @@ namespace MCsim
 
 	public:
 		RequestScheduler_FCFS(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable, int dataBus): 
-			RequestScheduler(requestQueues, commandQueues, requestorTable){
-		}
-
+			RequestScheduler(requestQueues, commandQueues, requestorTable){}
 		void requestSchedule()
 		{
 			scheduledRequest = NULL;
 			checkRequest = NULL;
 
-			for(unsigned int index=0; index<requestQueue.size(); index++) {
-				// Requestor queue per Memory Level
-				if(requestQueue[index]->isPerRequestor()){					
+			for(unsigned int index=0; index<requestQueue.size(); index++) {				
+				if(requestQueue[index]->isPerRequestor()){		// Requestor queue per Memory Level
 					for(unsigned int num=0; num < requestQueue[index]->getQueueSize(); num++){
-						if(requestQueue[index]->getSize(true,num) > 0){
-							// Take the first request from this requestor
-							checkRequest = requestQueue[index]->checkRequestIndex(num, 0);
+						if(requestQueue[index]->getSize(true,num) > 0){							
+							checkRequest = requestQueue[index]->checkRequestIndex(num, 0); // Take the first request from this requestor
 							numIndex = num;
 							break;
 						}
@@ -42,13 +38,10 @@ namespace MCsim
 					}	
 					// Take the target request from numIndex
 					if(checkRequest != NULL) {
-						scheduledRequest = requestQueue[index]->getRequest(numIndex,0);
-						// Determine if the request target an open row or not
-						if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))){	
-							// Update the open row table for the device
-							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);		
-							// Remove the request that has been choosed
-							requestQueue[index]->removeRequest();							
+						scheduledRequest = requestQueue[index]->getRequest(numIndex,0);						
+						if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))){ // Determine if the request target an open row or not								
+							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);	// Update the open row table for the device							
+							requestQueue[index]->removeRequest();	// Remove the request that has been choosed						
 						}
 						else{							
 							scheduledRequest = NULL;
@@ -60,16 +53,12 @@ namespace MCsim
 				{
 					// If request queue is general not per requestor
 					scheduledRequest = NULL;
-					if(requestQueue[index]->getSize(false,0) > 0) {
-						// Take the request from the head of the queue
-						scheduledRequest = requestQueue[index]->getRequest(0);	
-						if(scheduledRequest != NULL){
-							// Determine if the request target an open row or not
-							if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))){
-								// Update the open row table for the device
-								updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);
-								// Remove the request that has been choosed
-								requestQueue[index]->removeRequest();
+					if(requestQueue[index]->getSize(false,0) > 0) {						
+						scheduledRequest = requestQueue[index]->getRequest(0);	// Take the request from the head of the queue
+						if(scheduledRequest != NULL){							
+							if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))){ // Determine if the request target an open row or not								
+								updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row); // Update the open row table for the device								
+								requestQueue[index]->removeRequest(); // Remove the request that has been choosed
 							}
 						}	
 					}
@@ -79,4 +68,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* REQUESTSCHEDULER_FCFS_H */

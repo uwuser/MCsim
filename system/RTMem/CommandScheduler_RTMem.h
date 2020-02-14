@@ -70,4 +70,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* COMMANDSCHEDULER_RTMEM_H */

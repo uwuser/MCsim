@@ -24,9 +24,6 @@ Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	wcLatency = 0;
 	compTime = 0;
 	long_l = 0;
-
-	readDone = false;
-
 	RequestBufferSize = 32; 
 	completeRequest = 0;
 	requestRequest = 0;

@@ -10,17 +10,14 @@ namespace MCsim
 	private:
 		bool newRound;
 		bool firstACT;
-
 		RequestType bundlingType;
 		vector<unsigned int> scheduledCmdQueue;
-
 		bool isSchedulable(Request* request, bool open)
 		{
 			if(requestorCriticalTable.at(scheduledRequest->requestorID)== true) {
 				for(unsigned int index=0; index<scheduledCmdQueue.size(); index++) {
-					if(commandQueue[scheduledCmdQueue[index]]->getSize(true) < 2) {
-						return false;
-					}
+					if(commandQueue[scheduledCmdQueue[index]]->getSize(true) < 2) 
+						return false;					
 				}
 			}
 			return true;
@@ -46,9 +43,8 @@ namespace MCsim
 						}
 					}
 				}
-				if(newRound) {
-					scheduledCmdQueue.clear();
-				}				
+				if(newRound) 
+					scheduledCmdQueue.clear();				
 			}
 			if(newRound || !firstACT) {
 				for(int index=0; index < requestQueue.size(); index++)
@@ -74,6 +70,4 @@ namespace MCsim
 		}
 	};
 }
-
-#endif
-
+#endif /* REQUESTSCHEDULER_PIPECAS_H */

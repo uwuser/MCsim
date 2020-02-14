@@ -8,7 +8,7 @@ namespace MCsim
 	class RequestScheduler_Direct: public RequestScheduler
 	{
 	private:
-		bool roundRobin_Level = false;  // Determine the RR if true
+		bool roundRobin_Level = false;  // Switch to RR arbitration
 		vector<unsigned int> requestorIndex;
 
 	public:
@@ -23,7 +23,6 @@ namespace MCsim
 		void requestSchedule()
 		{
 			for(size_t index =0; index < requestQueue.size(); index++) {
-				// Requestor Direct Connection per Memory Level - If using per requestor queue, it implements a RR
 				if(requestQueue[index]->isPerRequestor())
 				{
 					if(requestQueue[index]->getQueueSize() > 0)
@@ -33,19 +32,16 @@ namespace MCsim
 							scheduledRequest = NULL;
 							// requestorIndex[index]=num;   ENABLE if interested in having RR arbitration
 							if(requestQueue[index]->getSize(true, requestorIndex[index]) > 0) 
-							{
-								// Take the first request of the corresponding request queue
-								scheduledRequest = requestQueue[index]->getRequest(requestorIndex[index], 0);
+							{								
+								scheduledRequest = requestQueue[index]->getRequest(requestorIndex[index], 0); // Take the first request of the corresponding request queue
 								// Determine if the request target an open row or not
 								if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest)))
-								{
-									// Update the open row table for the device												
-									updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);
-									// Remove the request that has been choosed
-									requestQueue[index]->removeRequest();
+								{																				
+									updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row); // Update the open row table for the device										
+									requestQueue[index]->removeRequest(); // Remove the request that has been choosed
 								}
 							}
-							// Useful when using RR arbitration
+							// When using RR arbitration
 							requestorIndex[index]++;
 							if(requestorIndex[index] == requestQueue[index]->getQueueSize()) {
 								requestorIndex[index]=0;
@@ -62,16 +58,12 @@ namespace MCsim
 				{
 					// Using a global queue -> It will implement a FRFCFS scheduling
 					if(requestQueue[index]->getSize(false,0) > 0)
-					{
-						// Take the candidate request from the correspoding queue
-						scheduledRequest = scheduleFR(index);
-						// Determine if the request target an open row or not
-						if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest)))
-						{
-							// Update the open row table for the device
-							updateRowTable(scheduledRequest->rank, scheduledRequest->bank, scheduledRequest->row);
-							// Remove the request that has been choosed
-							requestQueue[index]->removeRequest();
+					{						
+						scheduledRequest = scheduleFR(index); // Take the candidate request from the correspoding queue						
+						if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))) // Determine if the request target an open row or not
+						{							
+							updateRowTable(scheduledRequest->rank, scheduledRequest->bank, scheduledRequest->row); // Update the open row table for the device							
+							requestQueue[index]->removeRequest(); // Remove the request that has been choosed
 						}
 						scheduledRequest = NULL;
 					}
@@ -81,5 +73,5 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif  /* REQUESTSCHEDULER_DIRECT_H */
 

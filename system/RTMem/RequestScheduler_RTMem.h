@@ -26,4 +26,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* REQUESTSCHEDULER_RTMEM_H */

@@ -49,5 +49,4 @@ namespace MCsim
 	};
 }
 
-#endif
-
+#endif /* COMMANDQUEUE_H */

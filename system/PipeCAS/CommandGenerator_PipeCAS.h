@@ -1,4 +1,3 @@
-
 #ifndef COMMANDGENERATOR_PIPECAS_H
 #define COMMANDGENERATOR_PIPECAS_H
 
@@ -15,7 +14,6 @@ namespace MCsim
 			CommandGenerator(dataBus),
 			requestorCriticalTable(requestorTable)
 		{
-			// requestorCriticalTable = requestorTable;
 			lookupTable[dataBus] = make_pair(1,1);
 			lookupTable[dataBus*2] = make_pair(2,1);
 			lookupTable[dataBus*4] = make_pair(4,1);
@@ -58,4 +56,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* COMMANDGENERATOR_PIPECAS_H */

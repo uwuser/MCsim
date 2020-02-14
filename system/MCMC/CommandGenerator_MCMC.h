@@ -1,4 +1,3 @@
-
 #ifndef COMMANDGENERATOR_MCMC_H
 #define COMMANDGENERATOR_MCMC_H
 
@@ -81,4 +80,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* COMMANDGENERATOR_MCMC_H */

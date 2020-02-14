@@ -11,6 +11,7 @@ namespace MCsim
 		CommandGenerator_Close(unsigned int dataBus):
 			CommandGenerator(dataBus)
 		{
+			// Crack the requests size if needed more particles - For instace AMC utilizes this feature
 			lookupTable[dataBus] = make_pair(1,1);
 			lookupTable[dataBus*2] = make_pair(2,1);
 			lookupTable[dataBus*4] = make_pair(4,1);
@@ -21,15 +22,14 @@ namespace MCsim
 		// The command generator generate the request type
 		bool commandGenerate(Request* request, bool open)
 		{
-			// Since it is close page, RD and WR will be inserted attached to a auto precharge
+			// Since it is close page, RD and WR will be inserted attached to a auto precharge (RDA or WRA)
 			BusPacketType CAS = RDA;
 			if(request->requestType == DATA_WRITE) {
 				CAS = WRA;
 			}
 			unsigned id = request->requestorID;
 			unsigned address = request->address;
-			unsigned rank = 0; 
-			//request->rank; // Can be disabled if there is one rank
+			unsigned rank = request->rank; //  Can be disabled (0) if there is one rank			
 			unsigned row = request->row;
 			unsigned col = request->col;
 
@@ -48,4 +48,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* COMMANDGENERATOR_CLOSE_H */

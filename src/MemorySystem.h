@@ -1,4 +1,3 @@
-
 #ifndef MEMORYSYSTEM_H
 #define MEMORYSYSTEM_H
 
@@ -59,4 +58,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* MEMORYSYSTEM_H */

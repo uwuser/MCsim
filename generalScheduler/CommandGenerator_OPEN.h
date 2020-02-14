@@ -8,13 +8,11 @@ namespace MCsim
 	class CommandGenerator_Open: public CommandGenerator
 	{
 	public:
-		CommandGenerator_Open(unsigned int dataBus):CommandGenerator(dataBus)
-		{
-		}
+		CommandGenerator_Open(unsigned int dataBus):
+			CommandGenerator(dataBus) {}			
 
 		bool commandGenerate(Request* request, bool open)
-		{
-			
+		{			
 			BusPacketType CAS = RD;
 			if(request->requestType == DATA_WRITE) {
 				CAS = WR;
@@ -25,11 +23,8 @@ namespace MCsim
 			unsigned rank = request->rank; // 0 *****;
 			unsigned bank = request->bank;
 			unsigned row = request->row;
-			unsigned col = request->col;
-			
-			// Crack the request to the DRAM command depending on being open or close 
-			for(int i=0; i<8; i++){
-			}
+			unsigned col = request->col;			
+			// Crack the request to the DRAM command depending on being open or close 			
 			if(!open && !first[request->bank]) { // Assuming the initial state of the banks in device is idle
 				commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, NULL, 0));
 				commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, NULL, 0));
@@ -45,4 +40,5 @@ namespace MCsim
 		}
 	};
 }
-#endif
+
+#endif /* COMMANDGENERATOR_OPEN_H*/

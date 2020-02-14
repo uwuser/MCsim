@@ -15,32 +15,6 @@
 #include "StatType.h"
 #endif
 
-/*
-  IMPORTANT NOTE - Read this first!
-
-  This version of the file provides wrappers to the gem5 statistics classes.
-  Feel free to go through this file, though it can be difficult to follow
-  with the degree of abstraction going on. In short, this file currently
-  provides the following mapping of stat classes. In almost all cases, the
-  wrapper provides identical and complete functionality to the gem5 stat
-  classes. All of our classes are defined in the ramulator namespace.
-
-  GEM5 CLASS --> RAMULATOR CLASS
-  ==============================
-  Stats::Scalar --> ScalarStat
-  Stats::Average --> AverageStat
-  Stats::Vector --> VectorStat
-  Stats::AverageVector --> AverageVectorStat
-  Stats::Distribution --> DistributionStat
-  Stats::Histogram --> HistogramStat
-  Stats::StandardDeviation --> StandardDeviationStat
-  Stats::AverageDeviation --> AverageDeviationStat
-
-  All of the stats that you create will be named "ramulator.<your name>"
-  automatically, and will be dumped at the end of simulation into the gem5
-  stats file.
-*/
-
 namespace ramulator {
 
 template<class StatType>
@@ -232,16 +206,6 @@ class StandardDeviationStat : public DistStatBase<Stats::StandardDeviation> {
 class AverageDeviationStat : public DistStatBase<Stats::AverageDeviation> {
 };
 
-/*
-  Stats TODO
-  * Formula
-  * VectorDistribution
-  * VectorStandardDeviation
-  * VectorAverageDeviation
-  * Vector2d
-  * SparseHistogram
-*/
-
-} /* namespace ramulator */
+} 
 
 #endif

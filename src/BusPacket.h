@@ -8,7 +8,7 @@ namespace MCsim
 	enum BusPacketType
 	{
 		RD, RDA, WR, WRA,						// CAS access
-		ACT_R, ACT_W, ACT, PRE, PREA,			// Open/Close operation
+		ACT_R, ACT_W, ACT, PRE, PREA,			// Open/Close operation - ACT_R and ACT_W are basically same but it was differentiated since it could be useful in some controllers.
 		REF,									// Refresh
 		PDE, PDX, SRE, SRX,						// Power Related Command
 		DATA
@@ -44,11 +44,9 @@ namespace MCsim
 		void *data;
 		unsigned arriveTime;
 		bool postCommand;
-		bool typereq;
 		unsigned postCounter;
 		unsigned int addressMap[4];
 	};
 }
 
-#endif
-
+#endif /* BUSPACKET_H */

@@ -1,4 +1,3 @@
-
 #include "BusPacket.h"
 #include "CommandQueue.h"
 

@@ -31,7 +31,3 @@ unsigned CommandGenerator::bufferSize()
 {
 	return commandBuffer.size();
 }
-
-
-
-

@@ -191,4 +191,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* COMMANDSCHEDULER_ROC_H */

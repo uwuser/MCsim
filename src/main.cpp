@@ -18,8 +18,6 @@
 using namespace std;
 using namespace MCsim;
 
-
-
 void usage() {
 	cout << "MCsim Usage: " << endl;
 	cout << "MCsim -n 8 -s system.ini -d device.ini -t memoryTraces -c cycles" <<endl;
@@ -117,16 +115,14 @@ int main(int argc, char **argv)
 		MemorySystem* memSys = NULL;
 		const string GeneSpeed = deviceGene + '_' + deviceSpeed;
 		const string GeneSize = deviceGene + '_' + deviceSize;
-		// New devices can be added here
+		// New devices can be added here ...
 		if (deviceGene == "DDR3") {
 			DDR3* ddr3 = new DDR3(GeneSize, GeneSpeed);
 			memSys = new Ramulator<DDR3>(ddr3, ranks);		
 		}
 		else if (deviceGene == "DDR4") {
 			DDR4* ddr4 = new DDR4(GeneSize, GeneSpeed);
-			memSys = new Ramulator_DDR4<DDR4>(ddr4, ranks);  	
-			//DDR4* ddr4 = new DDR4(configs["org"], configs["speed"]);
-			//memSys = new Ramulator<DDR4>(&configs, ddr4, dataBusSize);  	 			
+			memSys = new Ramulator_DDR4<DDR4>(ddr4, ranks);  		 			
 	    } 
 		else {
 			DEBUG("WRONG DRAM STANDARD");
@@ -155,15 +151,35 @@ int main(int argc, char **argv)
 				requestSize = 64;
 				break;
 			case 1:
+				inOrder = true;
+				isHRT = true;
+				requestSize = 64;
+				break;
 			case 2:
-			case 3:
+				inOrder = true;
+				isHRT = true;
+				requestSize = 64;
+				break;
+			case 3:		
 				inOrder = true;
 				isHRT = true;
 				requestSize = 64;
 				break;
 			case 4:
+				inOrder = true;
+				isHRT = true;
+				requestSize = 64;
+				break;
 			case 5:
+				inOrder = true;
+				isHRT = true;
+				requestSize = 64;
+				break;
 			case 6:
+				inOrder = true;
+				isHRT = true;
+				requestSize = 64;
+				break;
 			case 7:
 				inOrder = true;
 				isHRT = true;

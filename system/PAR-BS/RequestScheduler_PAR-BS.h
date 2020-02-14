@@ -1,9 +1,3 @@
-/*********************************************************************************
-*  Copyright (c) 2019 Reza Mirosanlou
-*                             University of Waterloo
-            
-*  All rights reserved.
-*********************************************************************************/
 #ifndef REQUESTSCHEDULER_PARBS_H
 #define REQUESTSCHEDULER_PARBS_H
 
@@ -42,7 +36,6 @@ namespace MCsim
 			localBcount = rmax * bmax;
 			MarkingCap = 5; // Can be optionally modified
 		}
-
 		Request* BetterRequest(Request* req1,Request* req2){
 
 			if(marked[req1] ^ marked[req2]){
@@ -78,8 +71,7 @@ namespace MCsim
 			}
 			return req2;
 		}	
-		// Form the batch
-		void form_batch()
+		void form_batch() 		// Form the batch
 		{ 	
 			for (unsigned int b = 0; b < localBcount; b++){
                 for (unsigned int p = 0; p < requestorCriticalTable.size() ; p++){
@@ -150,4 +142,4 @@ namespace MCsim
 		}		
 	};
 }
-#endif
+#endif /* REQUESTSCHEDULER_PARBS_H */

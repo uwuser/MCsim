@@ -14,12 +14,10 @@ MemorySystem::MemorySystem(unsigned int ranks):
 	columns = 0;
 	dataBusWidth = 0;
 	memoryController = NULL;
-	commandTrace.open("cmdTrace.txt");
 }
 
 MemorySystem::~MemorySystem()
 {
-	commandTrace.close();
 	dataCycles.clear();
 	memoryArray.clear();
 	pendingReadData.clear();

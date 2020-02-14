@@ -13,7 +13,6 @@ namespace MCsim
 	public:
 		CommandGenerator(unsigned int dataBus);
 		virtual ~CommandGenerator();
-
 		virtual bool commandGenerate(Request* request, bool open) = 0;
 
 		BusPacket* getCommand();
@@ -28,4 +27,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* COMMANDGENERATOR_H */

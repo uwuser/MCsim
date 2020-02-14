@@ -1,0 +1,25 @@
+EVERY CHANGES IN THE MEMULATOR SPEEDUP SHOULD REFLEC IN THIS DIRECTORY AS WELL. 
+THIS IS THE VERSION THAT FINALLY WILL BE UPLOADED TO THE REPO FOR THE CAS PAPER.
+
+
+These are the changes that may affect the behaviour (*** means that the previous code was like ****):
+	1- in open commanfd gfenerator: unsigned rank = rank; // 0 *****;
+	2- if(requestQueue[index]->getSize(false,0) > 0){ was removed in request scheduler FRFCFS and I added back
+	3- request->addressMap[Rank] = request->rank; //***** 0; in address mapping
+	4- CommandGenerator.cpp. Enabled 	std::queue<BusPacket*> empty;	std::swap(commandBuffer, empty);
+	5- CommandQueue.cpp -< enabled the destructor std::vector<BusPacket*> empty;	std::swap(hrtBuffer, empty);	std::swap(srtBuffer, empty);
+	6- stats in memorycontroller needs to be cleaned
+	7- #include "RefreshMachine.h" is enabled in memorycontroller.h
+	8- readdataarray in memorysystem: //&memoryArray[load->rank][load->bank][load->row][load->column]; and update dataarray //memoryArray[store->rank][store->bank][store->row][store->column] = &store->data; is removed	
+	9- in command generator for close and open the rank reverted to what it was
+	
+	10 PARBS new and batching FRFCFRS double akid check
+
+ ./Memulator -n 8 -s ../system/RTMem/RTMem.ini  -G DDR3 -D 1600K -S 4Gb_x8 -R 1 -t Mem_Trace/1M_seq.trc -c 100
+
+Ok, so I changed the way the write in writequeu is flushed. Just note that here,m the sim is going to finish when the cua is finished servicing.\
+
+
+
+
+

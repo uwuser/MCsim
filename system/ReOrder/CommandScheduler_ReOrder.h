@@ -181,20 +181,6 @@ namespace MCsim
 					}
 				}
 				queuePending[commandRegisters[registerIndex].second] = false;
-				/*
-				if(scheduledCommand->busPacketType == 0){
-						cout<<"Now issuing  RD  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-				}
-				else if(scheduledCommand->busPacketType == 2){
-						cout<<"Now issuing  WR  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-				}
-				else if(scheduledCommand->busPacketType == 6){
-						cout<<"Now issuing  ACT  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-				}
-				else if(scheduledCommand->busPacketType == 7){
-						cout<<"Now issuing  PRE  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-				}
-				*/
 				sendCommand(scheduledCommand, commandRegisters[registerIndex].second, false);
 				// Virtual Channel
 				if(requestorCriticalTable.at(scheduledCommand->requestorID) == false) {
@@ -207,19 +193,6 @@ namespace MCsim
 					for(unsigned int index=0; index<srtFIFO.size(); index++) {
 						if(isIssuable(srtFIFO[index].first)) {
 							scheduledCommand = srtFIFO[index].first;
-							/*
-							if(scheduledCommand->busPacketType == 0){
-							cout<<"Now issuing  RD  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-							}
-							else if(scheduledCommand->busPacketType == 2){
-									cout<<"Now issuing  WR  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-							}
-							else if(scheduledCommand->busPacketType == 6){
-									cout<<"Now issuing  ACT  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-							}
-							else if(scheduledCommand->busPacketType == 7){
-									cout<<"Now issuing  PRE  from requestor  "<<scheduledCommand->requestorID<<"   address is  "<<scheduledCommand->address<<endl;
-							}*/
 							sendCommand(scheduledCommand, srtFIFO[index].second, false);
 							queuePending[srtFIFO[index].second] = false;
 							srtFIFO.erase(srtFIFO.begin() + index);

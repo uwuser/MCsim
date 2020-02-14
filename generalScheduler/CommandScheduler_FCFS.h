@@ -12,19 +12,14 @@ namespace MCsim
 	private:
 	public:
 		CommandScheduler_FCFS(vector<CommandQueue*>& commandQueues, const map<unsigned int, bool>& requestorTable):
-			CommandScheduler(commandQueues, requestorTable)
-		{			
-		}
+			CommandScheduler(commandQueues, requestorTable){}		
 		BusPacket* commandSchedule()
 		{			
 			checkCommand = NULL;
-			checkCommand_1 = NULL;
-			index_temp = 0;
-			// Take the first command that is ready and issueable 
-			for(unsigned int index = 0; index < commandQueue.size(); index++)
-			{
-				// If using per requestor queue structure for the commandQueues
-				if(commandQueue[index]->isPerRequestor()) 
+			checkCommand_temp_1 = NULL;			
+			for(unsigned int index = 0; index < commandQueue.size(); index++) // Take the first command that is ready and issueable 
+			{				
+				if(commandQueue[index]->isPerRequestor())  // If using per requestor queue structure for the commandQueues
 				{
 					if(commandQueue[index]->getRequestorIndex() > 0) // There is at least one requestor in the system
 					{
@@ -33,11 +28,11 @@ namespace MCsim
 							if(commandQueue[index]->getRequestorSize(num) > 0 ) // Return the buffer size of the requestor
 							{
 								checkCommand = commandQueue[index]->getRequestorCommand(num);
-								if(isReady(checkCommand, index))
+								if(isReady(checkCommand, index)) // If the command is intra-ready
 								{
-									if(isIssuable(checkCommand))
+									if(isIssuable(checkCommand))  // If the command is issue able (inter-ready)
 									{
-										checkCommand_1 = checkCommand;
+										checkCommand_temp_1 = checkCommand;
 										checkCommand = NULL;
 										break;
 									}												
@@ -51,13 +46,13 @@ namespace MCsim
 							if(commandQueue[index]->getRequestorSize(num_1) > 0 ) // Return the buffer size of the requestor
 							{
 								checkCommand = commandQueue[index]->getRequestorCommand(num_1);			
-								if(isReady(checkCommand, index))
+								if(isReady(checkCommand, index)) // If the command is intra-ready
 								{
-									if(isIssuable(checkCommand))
+									if(isIssuable(checkCommand)) // If the command is inter-ready
 									{
-										if(checkCommand_1->arriveTime >= checkCommand->arriveTime)
+										if(checkCommand_temp_1->arriveTime >= checkCommand->arriveTime)
 										{
-											checkCommand_1 = checkCommand;
+											checkCommand_temp_1 = checkCommand;
 											checkCommand = NULL;
 										}
 									}
@@ -65,8 +60,8 @@ namespace MCsim
 								checkCommand = NULL;	
 							}
 						}
-						if(checkCommand_1 != NULL){
-							scheduledCommand = checkCommand_1;
+						if(checkCommand_temp_1 != NULL){
+							scheduledCommand = checkCommand_temp_1;
 							sendCommand(scheduledCommand,index, false);
 							return scheduledCommand;
 						}					
@@ -80,26 +75,11 @@ namespace MCsim
 						checkCommand = commandQueue[index]->getCommand(true);
 						if(checkCommand != NULL)
 						{																
-							if(isReady(checkCommand,index))
+							if(isReady(checkCommand,index))   // If the command is intra-ready
 							{							
-								if(isIssuable(checkCommand))
+								if(isIssuable(checkCommand))   // If the command is inter-ready
 								{									
-									scheduledCommand = checkCommand;		
-									/*
-									if(scheduledCommand->busPacketType == PRE)
-									{
-										cout<<"PRE"<<"\t\t"<<clock<<":"<<"\tBank: "<<scheduledCommand->bank<<"\tAddress: "<<scheduledCommand->address<<"\tColumn: "<<scheduledCommand->column<<"\tRow: "<<scheduledCommand->row<<endl;										
-									}
-									else if(scheduledCommand->busPacketType == RDA){
-										cout<<"RD"<<"\t\t"<<clock<<":"<<"\tBank: "<<scheduledCommand->bank<<"\tAddress: "<<scheduledCommand->address<<"\tColumn: "<<scheduledCommand->column<<"\tRow: "<<scheduledCommand->row<<endl;								
-									}
-									else if(scheduledCommand->busPacketType == WRA){
-										cout<<"WR"<<"\t\t"<<clock<<":"<<"\tBank: "<<scheduledCommand->bank<<"\tAddress: "<<scheduledCommand->address<<"\tColumn: "<<scheduledCommand->column<<"\tRow: "<<scheduledCommand->row<<endl;									
-									}
-									else if(scheduledCommand->busPacketType == ACT){
-										cout<<"ACT"<<"\t\t"<<clock<<":"<<"\tBank: "<<scheduledCommand->bank<<"\tAddress: "<<scheduledCommand->address<<"\tColumn: "<<scheduledCommand->column<<"\tRow: "<<scheduledCommand->row<<endl;								
-									}
-									*/								
+									scheduledCommand = checkCommand;									
 									sendCommand(scheduledCommand, index,false);
 									return scheduledCommand;																					
 								}									
@@ -114,4 +94,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* COMMANDSCHEDULER_FCFS_H */

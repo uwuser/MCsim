@@ -43,5 +43,4 @@ namespace MCsim
 	};
 }
 
-#endif
-
+#endif /* REQUEST_H */

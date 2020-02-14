@@ -10,11 +10,9 @@ namespace MCsim
 	class RequestScheduler_RR: public RequestScheduler
 	{
 	private:
-		unsigned int slotCounter, timeSlot, dataBusSize;
-		// Check order of queue index
-		unsigned int queueIndex;
-		// Requestor queue index in individual memory level 
-		std::vector<unsigned> queueRequestorIndex;
+		unsigned int slotCounter, timeSlot, dataBusSize;		
+		unsigned int queueIndex; // Check order of queue index		
+		std::vector<unsigned> queueRequestorIndex; // Requestor queue index in individual memory level 
 		std::vector<Request*> srtRequestBuffer;
 		bool fixedPrioirty;
 
@@ -24,6 +22,7 @@ namespace MCsim
 		{
 			// The time slot must be calculated based on the device and pattern
 			// ex.DDR3-1600H: RCD + WL + Bus + WR + RP = 42
+			// request scheduler picks a request at each timeslot and then move to the next requestor based on the RR arbitration 
 			fixedPrioirty = false;
 			slotCounter = 0;
 			dataBusSize = dataBus;
@@ -41,8 +40,7 @@ namespace MCsim
 			{
 				scheduledRequest = NULL;
 				for(unsigned int index=0; index<requestQueue.size(); index++) 
-				{
-					// Queue is used as requestorQueue
+				{					
 					if(requestQueue[queueIndex]->isPerRequestor()) 
 					{
 						if(requestQueue[queueIndex]->getQueueSize() > 0) 
@@ -70,9 +68,8 @@ namespace MCsim
 									else {
 										break;
 									}
-								}					
-								// Update to next requestor
-								queueRequestorIndex[queueIndex]++;
+								}													
+								queueRequestorIndex[queueIndex]++; // Update to next requestor
 								if(queueRequestorIndex[queueIndex] == requestQueue[queueIndex]->getQueueSize()) {
 									queueRequestorIndex[queueIndex] = 0;
 								}
@@ -120,4 +117,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* REQUESTSCHEDULER_RR_H  */

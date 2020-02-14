@@ -63,6 +63,7 @@
         "forward_list": "cpp",
         "memory": "cpp",
         "scoped_allocator": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "queue": "cpp"
     }
 }

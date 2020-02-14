@@ -31,4 +31,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* ADDRESS_MAPPING_H */

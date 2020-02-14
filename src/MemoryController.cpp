@@ -31,23 +31,17 @@ callback(callback)
 	stats.open = 0;
 	stats.closeRequest = true;
 	stats.open_counter = 0;
-	stats.WCopenread = 0;
-	stats.WCcloseread = 0;
-	stats.WCclosewrite = 0;
-	stats.WCclosewrite =0;
 	stats.close_counter = 0;
 	stats.openRead_Latency = 0;
 	stats.closeRead_Latency = 0;
 	stats.openWrite_Latency = 0;
 	stats.closeWrite_Latency = 0;
-	stats.close_counter = 0;
-	stats.open_counter = 0;
 
 	myTrace.open ("trace.txt");
 	memorySystem = NULL;
 }
 
-MemoryController::~MemoryController()
+MemoryController::~MemoryController() // dtor
 {
 	// Delete Schedulers
 	delete schedulerRegister;
@@ -114,10 +108,7 @@ bool MemoryController::addRequest(unsigned int requestorID, unsigned long long a
 	}
 	incomingRequest = new Request(requestorID, requestType, size, address, NULL);
 	incomingRequest->arriveTime = clockCycle;
-
-	// Here the address mapping will occures
-	addressMapping->addressMapping(incomingRequest);
-
+	addressMapping->addressMapping(incomingRequest); // Here the address mapping will occures
 	// ============ Stats Tracker ===================
 	if(incomingRequest->requestorID == 0) {
 		stats.totalRequest++;
@@ -152,26 +143,18 @@ bool MemoryController::enqueueCommand(BusPacket* command)
 			if(stats.closeRequest) 
 			{
 				stats.close_counter = 0;
-				if(command->busPacketType == RDA || command->busPacketType == RD) 
-				{
-					stats.closeRead++;
-				}
-				else 
-				{
-					stats.closeWrite++;
-				}
+				if(command->busPacketType == RDA || command->busPacketType == RD) 				
+					stats.closeRead++;				
+				else 				
+					stats.closeWrite++;				
 			}	
 			else 
 			{
 				stats.open_counter = 0;
-				if(command->busPacketType == RDA || command->busPacketType == RD) 
-				{
-					stats.openRead++;
-				}
-				else
-				{
-					stats.openWrite++;
-				}
+				if(command->busPacketType == RDA || command->busPacketType == RD) 				
+					stats.openRead++;				
+				else				
+					stats.openWrite++;				
 			}
 		}
 	}
@@ -208,8 +191,7 @@ void MemoryController::step()
 		if(outgoingCmd != NULL)
 		{
 			if(outgoingCmd->requestorID == 0 && outgoingCmd->busPacketType <= ACT)
-			{
-			}
+			{}
 			// outgoingCmd->rank instead of zero
 			if (outgoingCmd->busPacketType == WR || outgoingCmd->busPacketType == WRA) {
 				sendDataBuffer.push_back(new BusPacket(DATA, outgoingCmd->requestorID, outgoingCmd->address, outgoingCmd->column,
@@ -248,8 +230,7 @@ void MemoryController::step()
 		}
 	}
 	// step through the scheduler components
-	 requestScheduler->step();
-	
+	requestScheduler->step();	
 	commandScheduler->tick();
 	clockCycle++;
 
@@ -286,7 +267,6 @@ void MemoryController::receiveData(BusPacket *bpacket)
 					stats.open_counter = 0;
 				}	
 				// *** Deallocation
-				//cout<<"size of the pending read request  "<<pendingReadRequest.size()<<endl;		
 				delete pendingReadRequest[index];
 				pendingReadRequest.erase(pendingReadRequest.begin()+index);
 			}
@@ -421,16 +401,13 @@ void MemoryController::readConfigFile(const string& filename)
 
 void MemoryController::SetKey(string key, string valueString)
 {
-	// Request Queue Structure (if perRequestor or writeBuffer enabled)
-	
+	// Request Queue Structure (if perRequestor or writeBuffer enabled)	
 	if(key == "RequestQueue") { setQueue(valueString, reqMap);}
 	else if(key == "WriteQueue") { writeQueueEnable = convertNumber(valueString); } // 0 is false, 1 is true
-	else if(key == "ReqPerREQ") { requestorReqQ = convertNumber(valueString); }
-	
+	else if(key == "ReqPerREQ") { requestorReqQ = convertNumber(valueString); }	
 	// Command Queue Structure (if perRequestor enabled)
 	else if(key == "CommandQueue"){ setQueue(valueString, cmdMap);}
 	else if(key == "CmdPerREQ") { requestorCmdQ = convertNumber(valueString); }
-
 	// Memory Controller Scheduler Identification
 	else { configTable[key] = valueString;}	
 }

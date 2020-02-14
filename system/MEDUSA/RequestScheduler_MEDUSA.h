@@ -29,7 +29,6 @@ namespace MCsim
 		{
 			Request* tempRequest = NULL;
 			RequestQueue* tempQueue = NULL;
-
 			// Read Request Checking - Batching
 			// If there exist a read request to the reserved banks, it must be issued no matther what happen to the high/low watermark
 			writeEnable = true;
@@ -136,5 +135,5 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* REQUESTSCHEDULER_MEDUSA_H */
 

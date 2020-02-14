@@ -71,4 +71,5 @@ namespace MCsim
 		}
 	};
 }
-#endif
+
+#endif /* REQUESTSCHEDULER_BLISS_H */

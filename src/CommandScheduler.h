@@ -1,4 +1,3 @@
-
 #ifndef _COMMANDSCHEDULER_H
 #define _COMMANDSCHEDULER_H
 
@@ -54,13 +53,13 @@ namespace MCsim
 
 		BusPacket* scheduledCommand;
 		BusPacket* checkCommand;
-		BusPacket* checkCommand_1;
-		BusPacket* checkCommand_2;
+		BusPacket* checkCommand_temp_1;
+		BusPacket* checkCommand_temp_2;
 		void send_precedure(MCsim::BusPacket *checkcommand, bool PRE, int RR );
 
 		ofstream fout;
 
-		bool con, skipCAS;
+		bool skipCAS;
 		unsigned int ranks, banks;
 		unsigned index_temp;
 		unsigned long clock;
@@ -68,4 +67,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* _COMMANDSCHEDULER_H */

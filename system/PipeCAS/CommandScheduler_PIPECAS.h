@@ -1,4 +1,3 @@
-
 #ifndef COMMANDSCHEDULER_PIPECAS_H
 #define COMMANDSCHEDULER_PIPECAS_H
 
@@ -34,7 +33,6 @@ namespace MCsim
 		vector<bool> queuePending;		
 
 /********* SRT Buffer System **********/
-		// SRT cmd queues in FCFS order
 		vector<std::pair<BusPacket*, int>> srtCAS;
 		vector<std::pair<BusPacket*, int>> srtACT;
 		vector<std::pair<BusPacket*, int>> srtPRE;
@@ -95,12 +93,10 @@ namespace MCsim
 			return 5*(num-1) + ceil((num-1)/4)*(4);
 		}
 		unsigned int tCAS_SRT(bool read, unsigned int num, unsigned int srtNum) {
-			if(read) {
+			if(read) 
 				return max(max(0, int(15-4*(num-1))) + exeACT(num), exeACT(num+srtNum)) + 9 - ((4+1)*(num-1)+4);
-			}
-			else {
+			else 
 				return max(max(0, int(21-4*(num-1))) + exeACT(num), exeACT(num+srtNum)) + 9 - ((4+1)*(num-1)+4);
-			}
 		}
 	public:
 		CommandScheduler_PIPECAS(vector<CommandQueue*>& commandQueues, const map<unsigned int, bool>& requestorTable, unsigned int srtSlot):
@@ -120,7 +116,7 @@ namespace MCsim
 			}
 			roundStart = false;
 		}
-		~CommandScheduler_PIPECAS()
+		~CommandScheduler_PIPECAS() // dtor
 		{
 			queueScheduled.clear();
 			hrtCAS.clear();
@@ -265,12 +261,10 @@ namespace MCsim
 					srtWR = 0;
 				}
 				schedule_SRT_CAS();
-				if(scheduledCommand == NULL) {
+				if(scheduledCommand == NULL) 
 					schedule_SRT_ACT();
-				}
-				if(scheduledCommand == NULL) {
+				if(scheduledCommand == NULL) 
 					schedule_SRT_PRE();
-				}
 			}
 			if(scheduledCommand != NULL) {
 				sendCommand(scheduledCommand, scheduledIndex, false);
@@ -311,6 +305,4 @@ namespace MCsim
 		}
 	};
 }
-#endif
-
-
+#endif /* COMMANDSCHEDULER_PIPECAS_H */

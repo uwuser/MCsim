@@ -130,7 +130,7 @@ namespace MCsim
 			tCCD = 4;
 			tWtoR = getTiming("tWL") + getTiming("tBUS") + getTiming("tWTR");
 			checkCommand = NULL;
-			checkCommand_1 = NULL;
+			checkCommand_temp_1 = NULL;
 			blockACT = false;
 			blockCAS = false;
 			if(CAStimer > 0)
@@ -484,8 +484,8 @@ namespace MCsim
 										}
 										else
 										{
-											checkCommand_1 = tempqueue[RR1];	
-											if (checkCommand_1->busPacketType == ACT_R)
+											checkCommand_temp_1 = tempqueue[RR1];	
+											if (checkCommand_temp_1->busPacketType == ACT_R)
 											{
 												if(!blockACT)
 												{
@@ -523,8 +523,8 @@ namespace MCsim
 										}
 										else
 										{
-											checkCommand_1 = tempqueue[RR1];	
-											if (checkCommand_1->busPacketType == ACT_W)
+											checkCommand_temp_1 = tempqueue[RR1];	
+											if (checkCommand_temp_1->busPacketType == ACT_W)
 											{
 												if(!blockACT)
 												{
@@ -610,17 +610,17 @@ namespace MCsim
 										}
 										else
 										{
-											checkCommand_1 = tempqueue[RR1];	
-											if (checkCommand_1->busPacketType == ACT_R)
+											checkCommand_temp_1 = tempqueue[RR1];	
+											if (checkCommand_temp_1->busPacketType == ACT_R)
 											{										
 												if(servicebuffer[RR1] == 0)
 												{
 													if(!blockACT)
 													{
-														if(isIssuable(checkCommand_1))
+														if(isIssuable(checkCommand_temp_1))
 														{															
-															send_precedure(checkCommand_1,false,RR1,i);
-															return checkCommand_1;
+															send_precedure(checkCommand_temp_1,false,RR1,i);
+															return checkCommand_temp_1;
 														}
 													}																									
 												}
@@ -654,17 +654,17 @@ namespace MCsim
 										}	
 										else
 										{
-											checkCommand_1 = tempqueue[RR1];	
-											if (checkCommand_1->busPacketType == ACT_W)
+											checkCommand_temp_1 = tempqueue[RR1];	
+											if (checkCommand_temp_1->busPacketType == ACT_W)
 											{
 												if(servicebuffer[RR1] == 0)
 												{
 													if(!blockACT)
 													{
-														if(isIssuable(checkCommand_1))
+														if(isIssuable(checkCommand_temp_1))
 														{																									
-															send_precedure(checkCommand_1,false,RR1,i);
-															return checkCommand_1;
+															send_precedure(checkCommand_temp_1,false,RR1,i);
+															return checkCommand_temp_1;
 														}	
 													}																							
 												}

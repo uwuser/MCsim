@@ -1,4 +1,3 @@
-
 #ifndef _REQUESTSCHEDULER_H
 #define _REQUESTSCHEDULER_H
 
@@ -65,4 +64,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* _REQUESTSCHEDULER_H */

@@ -128,4 +128,4 @@ namespace MCsim
 	};
 }
 
-#endif
+#endif /* REQUESTSCHEDULER_MCMC_H */

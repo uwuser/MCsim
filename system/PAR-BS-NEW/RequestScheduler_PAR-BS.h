@@ -1,9 +1,3 @@
-/*********************************************************************************
-*  Copyright (c) 2019 Reza Mirosanlou
-*                             University of Waterloo
-            
-*  All rights reserved.
-*********************************************************************************/
 #ifndef REQUESTSCHEDULER_PARBS_H
 #define REQUESTSCHEDULER_PARBS_H
 

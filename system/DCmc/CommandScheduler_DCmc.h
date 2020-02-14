@@ -100,5 +100,5 @@ namespace MCsim
 		}
 	};
 }
-#endif
+#endif /* COMMANDSCHEDULER_DCMC_H */
 

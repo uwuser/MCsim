@@ -7,7 +7,7 @@
 using namespace MCsim;
 using namespace std;
 
-CommandQueue::CommandQueue(bool perRequestor)
+CommandQueue::CommandQueue(bool perRequestor) // ctor
 {
 	scheduledQueue = true;
 	requestorQueue = false;
@@ -16,24 +16,24 @@ CommandQueue::CommandQueue(bool perRequestor)
 	perRequestorEnable = perRequestor;
 }
 
-CommandQueue::~CommandQueue()
+CommandQueue::~CommandQueue()  //dtor
 {
 	std::vector<BusPacket*> empty;
 	std::swap(hrtBuffer, empty);
 	std::swap(srtBuffer, empty);
 }
 
-bool CommandQueue::isPerRequestor()
+bool CommandQueue::isPerRequestor() // determine if the command queue structure is per requestor not
 {
 	return perRequestorEnable;
 }
 
-unsigned int CommandQueue::getRequestorIndex()
+unsigned int CommandQueue::getRequestorIndex()  // return the size command queue 
 {
 	return requestorMap.size();
 }
-// Get the size of individual buffer cmd for each requestor
-unsigned int CommandQueue::getRequestorSize(unsigned int index) 
+
+unsigned int CommandQueue::getRequestorSize(unsigned int index)  // Get the size of individual buffer cmd for each requestor
 {
 	if(index > requestorMap.size()) {
 		DEBUG("COMMAND QUEUE: ACCESSED QUEUE OS OUT OF RANGE");
@@ -43,18 +43,16 @@ unsigned int CommandQueue::getRequestorSize(unsigned int index)
 		return requestorBuffer[requestorMap[index]].size(); 
 	}
 }
-// Get the size of the general cmd buffers based on the criticality
-unsigned int CommandQueue::getSize(bool critical)
+ 
+unsigned int CommandQueue::getSize(bool critical) // Get the size of the general cmd buffers based on the criticality
 {
-	if(critical) { 
-		return hrtBuffer.size(); 
-	}
-	else { 
+	if(critical)
+		return hrtBuffer.size(); 	
+	else
 		return srtBuffer.size(); 
-	}	
 }
-// Inserting the cmd to the corresponding queues according to the queuing structure
-bool CommandQueue::insertCommand(BusPacket* command, bool critical)
+
+bool CommandQueue::insertCommand(BusPacket* command, bool critical) // Inserting the cmd to the corresponding queues according to the queuing structure
 {
 	if(perRequestorEnable){
 		if(requestorBuffer.find(command->requestorID) == requestorBuffer.end()) {
@@ -64,17 +62,15 @@ bool CommandQueue::insertCommand(BusPacket* command, bool critical)
 		requestorBuffer[command->requestorID].push_back(command);
 	}
 	else {
-		if(critical) { 
-			hrtBuffer.push_back(command); 
-		}
-		else {
-			srtBuffer.push_back(command); 
-		}		
+		if(critical)  
+			hrtBuffer.push_back(command); 		
+		else 
+			srtBuffer.push_back(command); 		
 	}
 	return true;
 }
-// Get a cmd from either general cmd buffers
-BusPacket* CommandQueue::getCommand(bool critical)
+
+BusPacket* CommandQueue::getCommand(bool critical) // Get a cmd from either general cmd buffers
 {
 	scheduledQueue = critical;
 	if(critical && !hrtBuffer.empty()) { 
@@ -89,8 +85,8 @@ BusPacket* CommandQueue::getCommand(bool critical)
 		return NULL; 
 	}
 }
-// Check a cmd from general buffers while for the purpose of checking
-BusPacket* CommandQueue::checkCommand(bool critical, unsigned int index)
+
+BusPacket* CommandQueue::checkCommand(bool critical, unsigned int index) // Check a cmd from general buffers while for the purpose of checking
 {
 	if(critical && !hrtBuffer.empty()) { 
 		return hrtBuffer[index]; 
@@ -104,18 +100,18 @@ BusPacket* CommandQueue::checkCommand(bool critical, unsigned int index)
 		return NULL; 
 	}
 }
-// Get a cmd from a particular requestor cmd buffer
-BusPacket* CommandQueue::getRequestorCommand(unsigned int index)
+
+BusPacket* CommandQueue::getRequestorCommand(unsigned int index) // Get a cmd from a particular requestor cmd buffer
 {
 	return requestorBuffer[requestorMap[index]].front();
 }
-// Remove a cmd from the beginning of the specific requestor queue
-void CommandQueue::removeCommand(unsigned int requestorID)
+
+void CommandQueue::removeCommand(unsigned int requestorID) // Remove a cmd from the beginning of the specific requestor queue
 {
 	requestorBuffer[requestorID].erase(requestorBuffer[requestorID].begin());
 }
-// Remove a cmd from the general buffers (hrt/srt) 
-void CommandQueue::removeCommand()
+
+void CommandQueue::removeCommand() // Remove a cmd from the general buffers (hrt/srt) 
 {
 	if(scheduledQueue == true) {
 		hrtBuffer.erase(hrtBuffer.begin());
@@ -124,13 +120,12 @@ void CommandQueue::removeCommand()
 		srtBuffer.erase(srtBuffer.begin());
 	}
 }
-// Determine if the scheduler require different ACT for read/write
-void CommandQueue::setACT(unsigned int x)
+
+void CommandQueue::setACT(unsigned int x) // Determine if the scheduler require different ACT for read/write (ACT_R and ACT_W)
 {
-	if(x == 1){ACTdiff = true;}
+	if(x == 1)
+		ACTdiff = true;
 	else
-	{
-		ACTdiff = false;
-	}
+		ACTdiff = false;	
 }
 

@@ -21,7 +21,7 @@ AddressMapping::AddressMapping(const std::string& format, const unsigned int (&m
 
 void AddressMapping::addressMapping(Request* request)
 {
-	// Case 1: Interleaved controllers (AMC, RTMem, PMC) Normal translation 
+	// Case 1: Interleaved controllers such as (AMC, RTMem, PMC), normal translation 
 	// Decode the address from trace according to the address mapping scheme
 	unsigned tempA = request->address;
 	unsigned tempB = request->address;
@@ -88,6 +88,3 @@ void AddressMapping::addressMapping(Request* request)
 	request->addressMap[Bank] = request->bank;
 	request->addressMap[SubArray] = request->subArray;
 }
-
-
-
