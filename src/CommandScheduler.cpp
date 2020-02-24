@@ -185,4 +185,5 @@ void CommandScheduler::tick()
 	}
 	refreshMachine->step();
 	clock++;
+	cout<<"clock is   "<<clock<<endl;
 }

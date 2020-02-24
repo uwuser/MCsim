@@ -63,7 +63,8 @@ unsigned int RequestScheduler::bufferSize(unsigned int qIndex){
 }
 Request* RequestScheduler::scheduleFR(unsigned int qIndex)
 {
-	for(unsigned int index=0; index < requestQueue[qIndex]->getSize(false, 0); index++) {				
+	for(unsigned int index=0; index < requestQueue[qIndex]->getSize(false, 0); index++) {		
+		//cout<<"the size of the request queue is  "<<requestQueue[qIndex]->getSize(false, 0)<<endl;
 		if(isRowHit(requestQueue[qIndex]->getRequestCheck(index))){
 			return requestQueue[qIndex]->getRequest(index);
 		}	

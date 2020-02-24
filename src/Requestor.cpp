@@ -106,16 +106,16 @@ void Requestor::update()
 {
 	latency++;		
 	// Control the suspecious WC latency for RT controllers - Disable for High Performance Controllers
-	if(wcLatency >= 1000 && requestorID == 0) {
-	DEBUG("worst case @ "<<currentClockCycle<<" REQ"<<requestorID<<" == "<<wcLatency);
-	DEBUG("A Worst-case is exceed 1000 cycles and the simulation aborted. If running OoO, please deactivate this control");
-	abort();
-	}	 
+	//if(wcLatency >= 1000 && requestorID == 0) {
+	//DEBUG("worst case @ "<<currentClockCycle<<" REQ"<<requestorID<<" == "<<wcLatency);
+	//DEBUG("A Worst-case is exceed 1000 cycles and the simulation aborted. If running OoO, please deactivate this control");
+	//abort();
+	//}	 
 	sim_done = readingTraceFile();
 	if(pendingRequest != NULL) {
 		// Send the request if the arrival time is reached
-		// If(pendingRequest->arriveTime <= currentClockCycle && corePendingData.size() <= RequestBufferSize) {
-		if(pendingRequest->arriveTime <= currentClockCycle) {
+		if(pendingRequest->arriveTime <= currentClockCycle && corePendingData.size() <= RequestBufferSize) {
+		//if(pendingRequest->arriveTime <= currentClockCycle) {
 			sendRequest(pendingRequest);
 			pendingRequest = NULL;
 		}	
