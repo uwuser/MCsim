@@ -117,7 +117,7 @@ Ro 27:0 = 40:13
 
 ```
 Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. 
-For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims. Since there is no DDR3 1600K device in the dramsim2, we generated the correspoding .ini file for this device according to the timing constraints.
+For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims. Since there is no DDR3 1600K device in the dramsim2, we generated the correspoding .ini file for this device according to the timing constraints. Notice that in order to use the FRFCFS or other mechanisms that require re Ordering in the request level, the inOrder flag in main.cpp should be set to false. In addition, currently the status counters are correct for RT MCs as they are concerecd with the worst case times.
 
 # Power Estimation
 This version of the MCsim does not support the power calculation, however, it could be a useful TODO step. 
