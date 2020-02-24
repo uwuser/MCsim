@@ -98,6 +98,27 @@ int requestSize = 64;       // Size of the memory request
 
 Upon finishing a trace file from core under analysis (REQ0), the simulation will end and the stats will be printed. This includes the worst case latency of the READ/WRITE (open/close) requests as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flag. The debug format is consist of two format; one for the requests, and the other one for commands.  
 
+# Simulation time reproduction
+
+In orther to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the ramulator we employed the MCsim_mapping.map as follows:
+
+```
+# Standard         DDR3
+# Number of bits     41
+# Channel             0
+# Rank                0
+# Bank                3
+# Row                28 
+# Column             10
+
+Co  9:0 =  9:0
+Ba  2:0 = 12:10
+Ro 27:0 = 40:13
+
+```
+Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. 
+For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims. Since there is no DDR3 1600K device in the dramsim2, we generated the correspoding .ini file for this device according to the timing constraints.
+
 # Power Estimation
 This version of the MCsim does not support the power calculation, however, it could be a useful TODO step. 
 
