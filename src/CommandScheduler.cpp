@@ -139,16 +139,16 @@ void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypa
 		// For the command trace option
 		if(cmd->busPacketType == PRE)						
 		{
-			TRACE_CMD("TRACE-COMMAND:     CMD: PRE"<<"\t\t"<<clock<<":"<<"\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);										
+			TRACE_CMD("TRACE-COMMAND:     CMD: PRE"<<"\t\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\t\tRow: "<<cmd->row);										
 		}
 		else if(cmd->busPacketType == RD){
-			TRACE_CMD("TRACE-COMMAND:     CMD: RD"<<"\t\t"<<clock<<":"<<"\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											
+			TRACE_CMD("TRACE-COMMAND:     CMD: RD"<<"\t\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\t\tRow: "<<cmd->row);											
 		}
 		else if(cmd->busPacketType == WR){
-			TRACE_CMD("TRACE-COMMAND:     CMD: WR"<<"\t\t"<<clock<<":"<<"\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											
+			TRACE_CMD("TRACE-COMMAND:     CMD: WR"<<"\t\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\t\tRow: "<<cmd->row);											
 		}
 		else if(cmd->busPacketType == ACT || cmd->busPacketType == ACT_R || cmd->busPacketType == ACT_W){
-			TRACE_CMD("TRACE-COMMAND:     CMD: ACT"<<"\t\t"<<clock<<":"<<"\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);								
+			TRACE_CMD("TRACE-COMMAND:     CMD: ACT"<<"\t\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\t\tRow: "<<cmd->row);								
 		}	
 	}
 	memorySystem->receiveFromBus(scheduledCommand);
@@ -185,5 +185,4 @@ void CommandScheduler::tick()
 	}
 	refreshMachine->step();
 	clock++;
-	cout<<"clock is   "<<clock<<endl;
 }

@@ -83,7 +83,7 @@ void AddressMapping::addressMapping(Request* request)
 	}
 	request->bank = request->requestorID;
 #endif
-	request->addressMap[Rank] = request->rank; //***** 0;
+	request->addressMap[Rank] = 0; //****request->rank;
 	request->addressMap[BankGroup] = request->bankGroup;
 	request->addressMap[Bank] = request->bank;
 	request->addressMap[SubArray] = request->subArray;
