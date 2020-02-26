@@ -140,10 +140,10 @@ bool RequestScheduler::isSchedulable(Request* request, bool open)
 {
 	if(request->requestType == DATA_READ)						
 	{
-		TRACE_REQ("TRACE-REQUEST:     REQ: READ"<<"\t\t"<<clockCycle<<":"<<"\tAddress: "<<request->address<<"\tBank: "<<request->bank<<"\tColumn: "<<request->col<<"\tRow: "<<request->row);										
+		TRACE_REQ("TRACE-REQUEST:     REQ: READ"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);										
 	}
 	else if(request->requestType == DATA_WRITE)	{
-		TRACE_REQ("TRACE-REQUEST:     REQ: WRITE"<<"\t\t"<<clockCycle<<":"<<"\tAddress: "<<request->address<<"\tBank: "<<request->bank<<"\tColumn: "<<request->col<<"\tRow: "<<request->row);							
+		TRACE_REQ("TRACE-REQUEST:     REQ: WRITE"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);							
 	}
 	return commandGenerator->commandGenerate(request, open);
 }
