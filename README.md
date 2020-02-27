@@ -96,7 +96,7 @@ int requestSize = 64;       // Size of the memory request
 ```
 # Simulator Output
 
-Upon finishing a trace file from core under analysis (REQ0), the simulation will end and the stats will be printed. This includes the worst case latency of the READ/WRITE (open/close) requests as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flag. The debug format is consist of two format; one for the requests, and the other one for commands.  
+Upon finishing a trace file from core under analysis (REQ0), the simulation will end and the stats will be printed. This includes the worst case latency of the READ/WRITE (open/close) requests as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flags. The debug format is consist of two format; one for the requests, and the other one for commands. Notice that, the stats assume that the cores are in order. In case of using OoO cores, the stats must be modified according to the WC definitions.  
 
 # Simulation time reproduction
 
