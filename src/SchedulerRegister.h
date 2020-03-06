@@ -8,6 +8,7 @@
 #include "../system/FRFCFS_Batch/RequestScheduler_FRFCFS_Batching.h"
 #include "../system/FCFS/RequestScheduler_FCFS.h"
 #include "../generalScheduler/CommandScheduler_FCFS.h"
+#include "../generalScheduler/CommandScheduler_PUSH.h"
 #include "../generalScheduler/RequestScheduler_RR.h"
 #include "../generalScheduler/CommandGenerator_OPEN.h"
 #include "../system/Round/CommandGenerator_Round.h"
@@ -65,6 +66,7 @@ namespace MCsim
 			commandSchedulerTable["ReOrder"] = new CommandScheduler_ReOrder(commandQueues, requestorTable);
 			commandSchedulerTable["ROC"] = new CommandScheduler_ROC(commandQueues, requestorTable);
 			commandSchedulerTable["FCFS"] = new CommandScheduler_FCFS(commandQueues, requestorTable);
+			commandSchedulerTable["PUSH"] = new CommandScheduler_PUSH(commandQueues, requestorTable);
 			commandSchedulerTable["PipeCAS"] = new CommandScheduler_PIPECAS(commandQueues, requestorTable, 0);
 			commandSchedulerTable["rankReOrder"] = new CommandScheduler_RankReOrder(commandQueues, requestorTable);
 		}

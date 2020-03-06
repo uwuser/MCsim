@@ -16,10 +16,10 @@ Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	localCache = new Cache();
 	sim_done = false;
 	bypass_read= false;
-	//currentClockCycle = 1; // Initial clock cycle
-	currentClockCycle = 0; 
-	//prevArrive = 1; // just for verification
-	prevArrive = 0;
+	currentClockCycle = 1; // Initial clock cycle
+	//currentClockCycle = 0; 
+	prevArrive = 1; // just for verification
+	//prevArrive = 0;
 	prevComplete = 0; // Finish time of the prev request from individual requestor
 	wcLatency = 0;
 	compTime = 0;

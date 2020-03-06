@@ -34,7 +34,7 @@ void AddressMapping::addressMapping(Request* request)
 		tempA = tempB;
 		switch (decodeIndex[index].first) {
 			case memOrg::Rank: 
-				request->addressMap[Rank] = tempAddr;
+				request->addressMap[Rank] = tempAddr;				
 				request->rank = tempAddr; 
 				break;
 			case memOrg::BankGroup:
@@ -83,7 +83,7 @@ void AddressMapping::addressMapping(Request* request)
 	}
 	request->bank = request->requestorID;
 #endif
-	request->addressMap[Rank] = 0; //****request->rank;
+	request->addressMap[Rank] = request->rank;
 	request->addressMap[BankGroup] = request->bankGroup;
 	request->addressMap[Bank] = request->bank;
 	request->addressMap[SubArray] = request->subArray;

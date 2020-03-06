@@ -26,7 +26,7 @@ namespace MCsim
 			unsigned col = request->col;			
 			// Crack the request to the DRAM command depending on being open or close 			
 			if(!open && !first[request->bank]) { // Assuming the initial state of the banks in device is idle
-				commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, NULL, 0));
+				commandBuffer.push(new BusPacket(PRE, id, address, col, row, bank, rank, NULL, 0));
 				commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, NULL, 0));
 			}
 			else if(!open && first[request->bank]) {
