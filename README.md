@@ -100,7 +100,7 @@ Upon finishing a trace file from core under analysis (REQ0), the simulation will
 
 # Simulation time reproduction
 
-In orther to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the ramulator we employed the MCsim_mapping.map as follows:
+In orther to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the dram mode simulation of ramulator we employed the MCsim_mapping.map as follows:
 
 ```
 # Standard         DDR3
@@ -116,6 +116,5 @@ Ba  2:0 = 12:10
 Ro 27:0 = 40:13
 
 ```
-Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. 
-For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the correspoding .ini file for this device according to the timing constraints from JEDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently the status counters are for RT MCs as they are concerecd with the worst case times.
+Notice that, for ramulator, all the print status activites must be disabled as they impose delay at run time. Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the correspoding .ini file for this device according to the timing constraints from JEDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently the status counters are for RT MCs as they are concerecd with the worst case times.
 
