@@ -117,5 +117,5 @@ Ro 27:0 = 40:13
 
 ```
 Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. 
-For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the correspoding .ini file for this device according to the timing constraints from JDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently the status counters are for RT MCs as they are concerecd with the worst case times.
+For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the correspoding .ini file for this device according to the timing constraints from JEDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently the status counters are for RT MCs as they are concerecd with the worst case times.
 
