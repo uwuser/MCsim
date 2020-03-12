@@ -36,8 +36,6 @@ callback(callback)
 	stats.closeRead_Latency = 0;
 	stats.openWrite_Latency = 0;
 	stats.closeWrite_Latency = 0;
-
-	myTrace.open ("trace.txt");
 	memorySystem = NULL;
 }
 
