@@ -7,17 +7,13 @@ namespace MCsim
 	class CommandScheduler_Round: public CommandScheduler
 	{
 	private:
-		vector<unsigned int> Order;
-		vector<unsigned int> OrderPRE;
+		vector<unsigned int> Order, OrderPRE;
 		std::map<unsigned long long, bool> closestatemap;	 // false means close 
 		std::map<unsigned int, bool> queuePending; 			 // Pending Command indicator based on requestorID
 		std::map<unsigned int, BusPacket*> tempqueue;
-		int servicebuffer[16]; 							 // 16 is the maximum REQ number
-		int consideredScheduled[16];	
-		int signCheck,checkB;
+		int servicebuffer[16], consideredScheduled[16],signCheck,checkB; 							 // 16 is the maximum REQ number
 		unsigned long int lastCAScounter;
-		unsigned int countACT,time_issued_first_ACT,ACTtimer,CAStimer,counter;
-		unsigned int tCCD,tWtoR,compensation;
+		unsigned int countACT,time_issued_first_ACT,ACTtimer,CAStimer,counter, tCCD,tWtoR,compensation;
 		bool blockACT,first,jump,roundType;
 	public:
 		CommandScheduler_Round(vector<CommandQueue*>& commandQueues, const map<unsigned int, bool>& requestorTable):
@@ -51,26 +47,21 @@ namespace MCsim
 			first = true;				
 		}
 		void send_precedure(BusPacket* checkcommand, bool PRE, int RR, int i){
+			scheduledCommand = checkcommand;
 			if(PRE == true){
 				OrderPRE.erase(OrderPRE.begin() + i);
 				OrderPRE.push_back(RR);
 				PRE = false;
-				scheduledCommand = checkcommand;
 				sendCommand(scheduledCommand,0,false);
-				tempqueue.erase(RR);
-				queuePending[scheduledCommand->requestorID] = false;
 				counter++;														
 			}
 			else
 			{
-				if((checkcommand->busPacketType == ACT_W) || (checkcommand->busPacketType == ACT_R))
-				{
-					scheduledCommand = checkcommand;
-					sendCommand(scheduledCommand,0,false);
-					tempqueue.erase(RR);
+				if((scheduledCommand->busPacketType == ACT_W) || (scheduledCommand->busPacketType == ACT_R))
+				{					
+					sendCommand(scheduledCommand,0,false);					
 					if(first)
-						first = false;					
-					queuePending[scheduledCommand->requestorID] = false;
+						first = false;		
 					if(countACT == 0){
 						time_issued_first_ACT = 0;
 						ACTtimer = getTiming("tRRD");
@@ -90,13 +81,10 @@ namespace MCsim
 					}	
 					counter++;				
 				}
-				else if((checkcommand->busPacketType == WR) || (checkcommand->busPacketType == RD))
+				else if((scheduledCommand->busPacketType == WR) || (scheduledCommand->busPacketType == RD))
 				{
 					Order.erase(Order.begin() + i);
-					scheduledCommand = checkcommand;
 					sendCommand(scheduledCommand,0,false);
-					tempqueue.erase(RR);
-					queuePending[scheduledCommand->requestorID] = false;
 					lastCAScounter = clock;				
 					CAStimer = tCCD;
 					if(first)
@@ -107,6 +95,8 @@ namespace MCsim
 					counter++;
 				}
 			}
+			tempqueue.erase(RR);
+			queuePending[scheduledCommand->requestorID] = false;
 		}
 		BusPacket* commandSchedule()
 		{	

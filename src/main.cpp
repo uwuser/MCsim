@@ -146,7 +146,7 @@ int main(int argc, char **argv)
 		switch(id)
 		{
 			case 0:
-				inOrder = false;
+				inOrder = true;
 				isHRT = true;
 				requestSize = 64;
 				break;
