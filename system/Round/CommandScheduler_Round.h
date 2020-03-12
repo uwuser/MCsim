@@ -3,7 +3,6 @@
 #include <cstdlib>
 
 namespace MCsim
-{
 	class CommandScheduler_Round: public CommandScheduler
 	{
 	private:
