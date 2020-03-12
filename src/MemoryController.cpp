@@ -352,7 +352,7 @@ void MemoryController::displayConfiguration()
 	PRINT("	Request Scheduler 	: "<<configTable["RequestScheduler"]);
 	PRINT("	Command Generator 	: "<<configTable["CommandGenerator"]);
 	PRINT("	Command Queue 		: "<<commandQueue.size()<<" perREQ "<<requestorCmdQ);
-	PRINT("	Command Scheduelr 	: "<<configTable["CommandScheduler"]);
+	PRINT("	Command Scheduler 	: "<<configTable["CommandScheduler"]);
 }
 
 // Read Value from Configuration File
