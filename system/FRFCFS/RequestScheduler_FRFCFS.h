@@ -19,7 +19,12 @@ namespace MCsim{
 				{					
 					scheduledRequest = scheduleFR(index);  // Take the candidate request from the correspoding queue	
 					if(scheduledRequest != NULL)
+<<<<<<< HEAD
 					{					
+=======
+					{
+						//cout<<"the request chosen here is  "<<scheduledRequest->address<<" from "<<scheduledRequest->bank<<endl;						
+>>>>>>> 811412cd7a5f55fac0cee64ba25689fc0059f3af
 						if(isSchedulable(scheduledRequest,isRowHit(scheduledRequest))) // Determine if the request target is an open row or not
 						{ 							
 							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row); // Update the open row table for the device																				

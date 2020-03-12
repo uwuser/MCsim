@@ -64,7 +64,11 @@
         "memory": "cpp",
         "scoped_allocator": "cpp",
         "typeindex": "cpp",
+<<<<<<< HEAD
         "queue": "cpp",
         "string": "cpp"
+=======
+        "queue": "cpp"
+>>>>>>> 811412cd7a5f55fac0cee64ba25689fc0059f3af
     }
 }
