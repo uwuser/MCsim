@@ -96,7 +96,7 @@ int requestSize = 64;       // Size of the memory request
 
 ```
 
-### Code Structure
+# Code Structure
 
 ```
 ├── dram               			  # Configs of various protocols that describe timing constraints.
