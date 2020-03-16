@@ -93,12 +93,29 @@ MCsim supports criticality for cores and also is able to simulate in-order and o
 bool inOrder = true;        // If the requestor is executing memory request in order
 bool isHRT = true;          // If the requestor is more critical than the others
 int requestSize = 64;       // Size of the memory request
+
 ```
+
+### Code Structure
+
+```
+├── dram                 # Configs of various protocols that describe timing constraints and power consumption.
+├── general scheduler                     # 
+├── src  					# MCsim source files    
+	├── Makefile 				 # Makefile
+	├── Mem_Trace                	            # 
+├── system                  		 # Tests of each model, includes a short example trace
+└── README.md
+
+  
+```
+
 # Simulator Output
 
 Upon finishing a trace file from core under analysis (REQ0), the simulation will end and the stats will be printed. This includes the worst case latency of the READ/WRITE (open/close) requests as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flags. The debug format is consist of two format; one for the requests, and the other one for commands. Notice that, the stats assume that the cores are in order. In case of using OoO cores, the stats must be modified according to the WC definitions.  
 
-# Validation Considerations
+
+# Validation
 
 In orther to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the dram mode simulation of ramulator we employed the MCsim_mapping.map as follows:
 
