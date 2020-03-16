@@ -3,9 +3,9 @@
 #include "global.h"
 #include <algorithm>   
 #include "CommandScheduler.h"
+using namespace std;
 
 using namespace MCsim;
-using namespace std;
 
 CommandQueue::CommandQueue(bool perRequestor) // ctor
 {

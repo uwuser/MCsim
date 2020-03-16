@@ -1,7 +1,6 @@
 #include "AddressMapping.h"
 #include "global.h"
 
-using namespace std;
 using namespace MCsim;
 
 AddressMapping::AddressMapping(const std::string& format, const unsigned int (&memTable)[6])

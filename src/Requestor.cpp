@@ -6,7 +6,6 @@
 #include <sstream>
 
 using namespace MCsim;
-using namespace std;
 
 Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	requestorID(id),

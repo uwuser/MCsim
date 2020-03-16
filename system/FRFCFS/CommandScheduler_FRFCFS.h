@@ -6,7 +6,6 @@
 
 #include "../../src/CommandScheduler.h"
 
-using namespace std;
 
 namespace MCsim
 {

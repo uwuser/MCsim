@@ -99,13 +99,24 @@ int requestSize = 64;       // Size of the memory request
 ### Code Structure
 
 ```
-├── dram                 # Configs of various protocols that describe timing constraints and power consumption.
-├── general scheduler                     # 
-├── src  					# MCsim source files    
-	├── Makefile 				 # Makefile
-	├── Mem_Trace                	            # 
-├── system                  		 # Tests of each model, includes a short example trace
+├── dram               			  # Configs of various protocols that describe timing constraints.
+├── general scheduler                     # General arbitration mechanisms
+├── src  			  	  # MCsim source files    
+	├── Makefile 		 	  # Makefile
+	├── Mem_Trace                	  # Test traces 
+├── system                  	   	  # Detailed implementation of each MC along with .ini configuration file
 └── README.md
+
+    AddressMapping.cpp: Responsible for address translation scheme determined by system.ini configuration file. 
+    CommangGenerator.cpp: Generating the DDR command according to the type of the incoming request.  
+    CommandQueue.cpp: Maintains command queue structures determined by parameters in system.ini.
+    RequestQueue.cpp: Maintains request queue structures determined by parameters in system.ini.
+    MemorySystem.cpp: Responsible for communicating with the memory device
+    RequestScheduler.cpp: Imepelements the arbitration in request level.  
+    Requestor.cpp:  Implements and handle the requestor behaviours.   
+    MemoryController: Implements the top module of the simulator, handling primary functions.
+    main.cc: Handles the main program loop that reads in simulation options, DRAM device configurations and tick the cycle. Determine the requestor criticality and execution order.
+    CommandScheduler.cpp	:  Imepelements the arbitration in command level.  
 
   
 ```

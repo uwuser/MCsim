@@ -1,6 +1,5 @@
 #include "../../src/CommandScheduler.h"
 
-using namespace std;
 namespace MCsim
 {
 	class CommandScheduler_ReOrder: public CommandScheduler

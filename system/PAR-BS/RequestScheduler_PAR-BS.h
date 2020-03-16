@@ -5,7 +5,6 @@
 
 #include <queue>
 #include <bits/stdc++.h> 
-using namespace std;
 
 namespace MCsim
 {
@@ -36,13 +35,15 @@ namespace MCsim
 			localBcount = rmax * bmax;
 			MarkingCap = 5; // Can be optionally modified
 		}
-		Request* BetterRequest(Request* req1,Request* req2){
+		Request* BetterRequest(Request* req1,Request* req2)
+		{
 
 			if(marked[req1] ^ marked[req2]){
 				if(marked[req1]) 
 					return req1;
 				else
-					return req2;			
+					return req2;	
+			}				
 			if(isRowHit(req1) ^ isRowHit(req2)){
 				if(isRowHit(req1))
 					return req1;
@@ -100,7 +101,8 @@ namespace MCsim
 				}
 			}
 		}
-		void requestSchedule(){
+		void requestSchedule()
+		{
 			// Pick the nominate request
 			if (markedCnt == 0)
 				form_batch();           			

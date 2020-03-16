@@ -2,7 +2,6 @@
 #include "CommandQueue.h"
 
 #include <vector>
-
 using namespace std;
 
 namespace MCsim

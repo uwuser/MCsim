@@ -2,7 +2,6 @@
 #include "CommandGenerator.h"
 
 using namespace MCsim;
-using namespace std;
 
 #define DEBUG(str) std::cerr<< str <<std::endl;
 

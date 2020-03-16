@@ -3,7 +3,6 @@
 
 #include "../../src/RequestScheduler.h"
 
-using namespace std;
 
 namespace MCsim
 {

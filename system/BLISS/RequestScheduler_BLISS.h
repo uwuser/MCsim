@@ -4,7 +4,6 @@
 #include "../../src/RequestScheduler.h"
 #include <queue>
 
-using namespace std;
 
 namespace MCsim
 {

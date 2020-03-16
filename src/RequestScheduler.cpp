@@ -3,7 +3,6 @@
 #include "CommandGenerator.h"
 #include "global.h"
 
-using namespace std;
 using namespace MCsim;
 
 RequestScheduler::RequestScheduler(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable):

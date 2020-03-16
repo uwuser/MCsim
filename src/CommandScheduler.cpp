@@ -3,6 +3,7 @@
 #include "CommandScheduler.h"
 #include "MemorySystem.h"
 #include "global.h"
+using namespace std;
 
 using namespace MCsim;
 
