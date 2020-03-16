@@ -39,11 +39,10 @@ namespace MCsim
 		Request* BetterRequest(Request* req1,Request* req2){
 
 			if(marked[req1] ^ marked[req2]){
-				if(marked[req1]) return req1;
-				else{
-					return req2;
-				}				
-			}
+				if(marked[req1]) 
+					return req1;
+				else
+					return req2;			
 			if(isRowHit(req1) ^ isRowHit(req2)){
 				if(isRowHit(req1))
 					return req1;
@@ -52,21 +51,17 @@ namespace MCsim
 			}
 			// Ranking	
 			if(markedMaxLoadPerProc[req1->requestorID] != markedMaxLoadPerProc[req2->requestorID] ){
-				if(markedMaxLoadPerProc[req1->requestorID] > markedMaxLoadPerProc[req2->requestorID]){
+				if(markedMaxLoadPerProc[req1->requestorID] > markedMaxLoadPerProc[req2->requestorID])
 					return req2;
-				}
-				else{
+				else
 					return req1;
-				}
 			}
 			else {	
 				if(markedTotalLoadPerProc[req1->requestorID] != markedTotalLoadPerProc[req2->requestorID] ){
-					if(markedTotalLoadPerProc[req1->requestorID] > markedTotalLoadPerProc[req2->requestorID]){
+					if(markedTotalLoadPerProc[req1->requestorID] > markedTotalLoadPerProc[req2->requestorID])
 						return req2;
-					}
-					else{
+					else
 						return req1;
-					}
 				}
 			}
 			return req2;
@@ -94,16 +89,13 @@ namespace MCsim
 							markedTotalLoadPerProc[p]++;
 							markedCnt++;
 							marked[nominate] = true;  // added 
-							if(markedCnt > markedMaxLoadPerProc[p]){
+							if(markedCnt > markedMaxLoadPerProc[p])
 								markedMaxLoadPerProc[p] = markedCnt;
-							}
 							nominate = NULL;	
 							b = b - 1;	
 						}
 						else
-						{
-							nominate = NULL;
-						}																					
+							nominate = NULL;																					
 					}
 				}
 			}
@@ -119,12 +111,10 @@ namespace MCsim
 				for(unsigned int k = 1; k<requestQueue[0]->getSize(false,0); k++){
 					temp_1 = temp;
 					temp = BetterRequest(requestQueue[0]->getRequestCheck(k),temp);
-					if(temp_1 == temp){
+					if(temp_1 == temp)
 						continue;
-					}
-					else{
+					else
 						temp_index = k;
-					}
 				}
 				scheduledRequest = requestQueue[0]->getRequest(temp_index);
 				if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))){
