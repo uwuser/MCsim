@@ -55,17 +55,7 @@ In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the 
 
 # Building and Running MCsim - full-system simulation
 
-MCsim can be integrated in full-system simulators. We provide intgrated packages to [MACsim] (http://comparch.gatech.edu/hparch/macsim.html) in MACsim directory. In order to build and run with MACsim, follow:
-
-```
- $ cd MACsim-MCsim
- $ ./build.py --clean
- $ ./build.py --dramsim
-```
-
-Notice that the device type, system.ini file can be changed in dram.cc file of the simulator. 
-
-MCsim is also capable to connect with CPU simulator such as Gem5 through linmcsim.so library. 
+MCsim can be integrated in full-system simulators. We provide a library (linmcsim.so) in order to prepare the interfaces for the CPU simulators.
  
 # MCsim Output Modes 
 
