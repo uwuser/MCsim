@@ -52,7 +52,7 @@ In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the 
 -c number of cycles for simulation
 
 ```
-# MCsim Debug Modes 
+# MCsim Output Modes 
 
 In order to track the command trace and request trace that are scheduled from any MC, there exists the following flags in the makefile. 
 

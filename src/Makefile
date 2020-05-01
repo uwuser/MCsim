@@ -1,6 +1,6 @@
 #CXX = clang++
 CXX = g++
-CXXFLAGS= -O3 -std=c++0x -Wall -Wpedantic 
+CXXFLAGS= -O3 -std=c++0x -Wall -pg -Wpedantic 
 #CXXFLAGS= -O3 -std=c++0x -g -pg -Wall -Wpedantic 
 # ######################################################
 # 		Addjust the following option based on need
