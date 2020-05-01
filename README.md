@@ -28,7 +28,7 @@ MCsim reads the instruction traces from a file, and simulates a simplified model
  ```
 The first token represents the address of the request. The second token accounts for the type of the access and the last token represnts the number of CPU instructions before the memory request
 
-# Building and Running MCsim
+# Building and Running MCsim - Standalone
 
 MCsim requires a C++11 compiler (e.g., clang++, g++-5). To build an optimized MCsim simply follow:
 
@@ -52,6 +52,21 @@ In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the 
 -c number of cycles for simulation
 
 ```
+
+# Building and Running MCsim - full-system simulation
+
+MCsim can be integrated in full-system simulators. We provide intgrated packages to [MACsim] (http://comparch.gatech.edu/hparch/macsim.html) in MACsim directory. In order to build and run with MACsim, follow:
+
+```
+ $ cd MACsim-MCsim
+ $ ./build.py --clean
+ $ ./build.py --dramsim
+```
+
+Notice that the device type, system.ini file can be changed in dram.cc file of the simulator. 
+
+MCsim is also capable to connect with CPU simulator such as Gem5 through linmcsim.so library. 
+ 
 # MCsim Output Modes 
 
 In order to track the command trace and request trace that are scheduled from any MC, there exists the following flags in the makefile. 
@@ -95,6 +110,20 @@ bool isHRT = true;          // If the requestor is more critical than the others
 int requestSize = 64;       // Size of the memory request
 
 ```
+
+# Refresh Mechanisms
+
+MCsim is capable of supporting different and common refresh mechanisms. For example, MCsim provides the following schemes:  
+
+*  Distributed refreshes: At any interval tREFI, corresponding banks from each rank will be refreshed. This can be done by chosing refresh mechanism in RefreshMachine.h file.
+
+       refresh_mechanism = "distributed";
+       
+*  Per-bank refreshes: At any partial interval tREFIpb, corresponding banks will be refreshed based on the arbitration mechanism (such as round-robin).
+
+       refresh_mechanism = "per-bank";
+
+In order to disable the refreshes, "none" can be chosed as refresh_mechanism.
 
 # Code Structure
 
