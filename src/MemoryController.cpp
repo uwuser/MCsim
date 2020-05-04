@@ -36,8 +36,46 @@ callback(callback)
 	stats.closeRead_Latency = 0;
 	stats.openWrite_Latency = 0;
 	stats.closeWrite_Latency = 0;
-	memorySystem = NULL;
+	memoryDevice = NULL;
 }
+
+
+MemoryController::MemoryController(MemorySystem *ms, const string& systemConfigFile)
+
+{
+	
+	// assign values to parameters based on configuration file
+	readConfigFile(systemConfigFile);
+
+	parentMemorySystem = ms;
+	//Initialize flow control
+	clockCycle = 0;
+	incomingRequest = NULL;
+	outgoingData = NULL;
+	outgoingCmd = NULL;
+
+	// Initialize statistic info
+	// ============ Stats Tracker ===================
+	stats.totalRequest = 0;
+	stats.openRead = 0;
+	stats.closeRead = 0;
+	stats.openWrite = 0;
+	stats.closeWrite = 0;
+	stats.readBytes = 0;
+	stats.writeBytes = 0;
+	stats.close = 0;
+	stats.open = 0;
+	stats.closeRequest = true;
+	stats.open_counter = 0;
+	stats.close_counter = 0;
+	stats.openRead_Latency = 0;
+	stats.closeRead_Latency = 0;
+	stats.openWrite_Latency = 0;
+	stats.closeWrite_Latency = 0;
+	myTrace.open ("trace.txt");
+	memoryDevice = NULL;
+}
+
 
 MemoryController::~MemoryController() // dtor
 {
@@ -62,16 +100,30 @@ void MemoryController::setRequestor(unsigned int id, bool criticality) {
 	requestorCriticalTable[id] = criticality;
 }
 
-void MemoryController::connectMemorySystem(MemorySystem* memSys) {
-	// Information on memory structure
-	memorySystem = memSys;
-	memTable[Rank] = memorySystem->get_Rank();
-	memTable[BankGroup] = memorySystem->get_BankGroup();
-	memTable[Bank] = memorySystem->get_Bank();
-	memTable[Row] = memorySystem->get_Row();
-	memTable[Column] = memorySystem->get_Column();
-	dataBusWidth = memorySystem->get_DataBus();
-	// Construct the request and command queues
+void MemoryController::connectMemoryDevice(MemoryDevice* memDev) {
+	memoryDevice = memDev;
+	memTable[Rank] = memoryDevice->get_Rank();
+	memTable[BankGroup] = memoryDevice->get_BankGroup();
+	memTable[Bank] = memoryDevice->get_Bank();
+	memTable[Row] = memoryDevice->get_Row();
+	memTable[Column] =memoryDevice->get_Column();
+
+	dataBusWidth = memoryDevice->get_DataBus();
+	
+	//MH: we set requestors criticality based on coreID for now, this can change based on controller type
+	// Ideally, this would be a parameter from config file
+	
+	unsigned int numberRequestors;
+	bool isHRT = false;
+	//numberRequestors = parentMemorySystem->numberRequestors;
+	for(unsigned int id = 0; id < numberRequestors; id++) {
+
+		if (id <numberRequestors/2)
+			isHRT = true;
+		
+		setRequestor(id, isHRT);
+	}
+	// construct the request and command queues
 	unsigned int queueNum = queueNumber(reqMap);
 	if(queueNum != 0) {
 		for(unsigned int index=0; index<queueNum; index++) {
@@ -91,11 +143,12 @@ void MemoryController::connectMemorySystem(MemorySystem* memSys) {
 	commandGenerator = schedulerRegister->getCommandGenerator(configTable["CommandGenerator"]);
 	commandScheduler = schedulerRegister->getCommandScheduler(configTable["CommandScheduler"]);
 	requestScheduler->connectCommandGenerator(commandGenerator);
-	commandScheduler->connectMemorySystem(memSys);
+	commandScheduler->connectMemoryDevice(memDev);
 }
 
+
 bool MemoryController::addRequest(unsigned int requestorID, unsigned long long address, bool R_W, unsigned int size)
-{
+{	
 	string type = "write";
 	if(R_W) {type = "read";}
 	myTrace<< clockCycle <<","<< type <<","<<address<<","<<"16,"<< requestorID <<"\n";
@@ -159,7 +212,7 @@ bool MemoryController::enqueueCommand(BusPacket* command)
 	command->addressMap[Rank] = 0;//command->rank;
 	command->addressMap[Bank] = command->bank;
 	command->addressMap[BankGroup] = 0;//command->bankGroup;
-	command->addressMap[SubArray] = 0;//command->subArray;
+	command->addressMap[SubArray] = command->subArray;
 	command->arriveTime = clockCycle;
 	
 	unsigned int queueIndex = decodeQueue(command->addressMap, cmdMap); // false indicate commandQueue
@@ -170,7 +223,7 @@ void MemoryController::flushWrite(bool sw)
 	if(writeQueueEnable)
 		requestScheduler->flushWriteReq(sw);
 }
-void MemoryController::step()
+void MemoryController::update()
 {
 	requestScheduler->requestSchedule();
 	// So far, req queue have been created. Upon this line, a request will be chosen and remove from either general buffer or REQ buffers and pushed into the command buffers
@@ -183,30 +236,32 @@ void MemoryController::step()
 			abort();
 		}
 	}
-	if(!commandScheduler->refreshing())
+	//if(!commandScheduler->refreshing())
+	//{
+	commandScheduler->refresh();
+	outgoingCmd = commandScheduler->commandSchedule();
+	if(outgoingCmd != NULL)
 	{
-		outgoingCmd = commandScheduler->commandSchedule();
-		if(outgoingCmd != NULL)
-		{
-			if(outgoingCmd->requestorID == 0 && outgoingCmd->busPacketType <= ACT)
-			{}
-			// outgoingCmd->rank instead of zero
-			if (outgoingCmd->busPacketType == WR || outgoingCmd->busPacketType == WRA) {
-				sendDataBuffer.push_back(new BusPacket(DATA, outgoingCmd->requestorID, outgoingCmd->address, outgoingCmd->column,
-				                                    outgoingCmd->row, outgoingCmd->bank, 0, outgoingCmd->data, clockCycle));
-				if(outgoingCmd->postCommand) {
-					// additive latency (AL) is tRCD - 1
-					sendDataCounter.push_back(memorySystem->get_constraints("tRCD") - 1 + memorySystem->get_constraints("tWL")+memorySystem->get_constraints("tBus"));
-				}
-				else {
-					sendDataCounter.push_back(memorySystem->get_constraints("tWL")+memorySystem->get_constraints("tBus"));
-				}
+		if(outgoingCmd->requestorID == 0 && outgoingCmd->busPacketType <= ACT)
+		{}
+		// outgoingCmd->rank instead of zero
+		if (outgoingCmd->busPacketType == WR || outgoingCmd->busPacketType == WRA) {
+			sendDataBuffer.push_back(new BusPacket(DATA, outgoingCmd->requestorID, outgoingCmd->address, outgoingCmd->column,
+												outgoingCmd->row, outgoingCmd->bank, 0 ,outgoingCmd->subArray, outgoingCmd->data, clockCycle));
+			if(outgoingCmd->postCommand) {
+				// additive latency (AL) is tRCD - 1
+				sendDataCounter.push_back(memoryDevice->get_constraints("tRCD") - 1 + memoryDevice->get_constraints("tWL")+memoryDevice->get_constraints("tBus"));
 			}
-			// commandScheduler->commandClear();
+			else {
+				sendDataCounter.push_back(memoryDevice->get_constraints("tWL")+memoryDevice->get_constraints("tBus"));
+			}
 		}
-		delete outgoingCmd;
-		outgoingCmd = NULL;
+		// commandScheduler->commandClear();
 	}
+	delete outgoingCmd;
+	outgoingCmd = NULL;
+	//}
+	/*
 	else {
 		// If there is no more pending data to be sent out, start refreshing
 		if(sendDataBuffer.empty() && outgoingData == NULL) {
@@ -214,6 +269,7 @@ void MemoryController::step()
 			DEBUG("REFRESHING");			
 		}
 	}
+	*/
 	if (sendDataCounter.size() > 0) {
 		if (sendDataCounter.front() == 0) {
 			outgoingData = sendDataBuffer.front();
@@ -278,7 +334,7 @@ void MemoryController::receiveData(BusPacket *bpacket)
 
 void MemoryController::sendData(BusPacket* bpacket) 
 {
-	memorySystem->receiveFromBus(bpacket);
+	memoryDevice->receiveFromBus(bpacket);
 	stats.writeBytes += dataBusWidth;
 	
 	for(unsigned int index=0; index < pendingWriteRequest.size(); index++) {
@@ -317,7 +373,36 @@ void MemoryController::sendData(BusPacket* bpacket)
 	}
 	
 }
+void MemoryController::returnReadData(const Request *req)
+{
+	
+	if (parentMemorySystem->ReturnReadData!=NULL)
+	{
+		
+		(*parentMemorySystem->ReturnReadData)(parentMemorySystem->systemID, req->address, clockCycle);
+	}
+}
 
+void MemoryController::writeDataDone(const Request *req)
+{
+	
+	if (parentMemorySystem->WriteDataDone!=NULL)
+	{
+		
+		(*parentMemorySystem->WriteDataDone)(parentMemorySystem->systemID,req->address, clockCycle);
+	}
+}
+
+unsigned int MemoryController::generalBufferSize()
+{
+	return requestQueue[0]->generalReadBufferSize(false);
+}
+
+
+bool MemoryController::isWriteModeFromController()
+{
+	return requestQueue[0]->isWriteMode();
+}
 void MemoryController::trackError(int id)
 {
 	DEBUG("REQUEST QUEUE: "<<requestQueue[id]->getSize(true,0)<<" COMMAND QUEUE: "<<commandQueue[id]->getSize(true));
@@ -326,12 +411,14 @@ void MemoryController::trackError(int id)
 void MemoryController::printResult()
 {
 	PRINT("\n");
+	PRINT("Statistics Assuming Cores are In Order:");
+	PRINT("\n");
 	PRINT("REQ under analysis: Open Request Ratio : "<<(float)(stats.openRead+stats.openWrite)/(stats.openRead+stats.openWrite+stats.closeRead+stats.closeWrite));
 	PRINT("   ");
 	PRINT("REQ under analysis: WC Open Read : "<<stats.openRead_Latency<<"	"<<"WC Close Read : "<<stats.closeRead_Latency<<"	"<<"WC Open Write : "<<stats.openWrite_Latency<<"	"<<"WC Close Write : "<<stats.closeWrite_Latency);
 	PRINT("   ");
 	PRINT("-----------------------------------------Simulation Summary---------------------------------------------");
-	PRINT("Bandwidth = "<<(float)(stats.readBytes+stats.writeBytes)/(clockCycle*memorySystem->get_constraints("tCK"))*1000<<" MB/s");
+	PRINT("Bandwidth = "<<(float)(stats.readBytes+stats.writeBytes)/(clockCycle*memoryDevice->get_constraints("tCK"))*1000<<" MB/s");
 	PRINT("   ");
 	PRINT("Number of Open Read     :  "<<stats.openRead);
 	PRINT("Number of Close Read	:  "<<stats.closeRead);

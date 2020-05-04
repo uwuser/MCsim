@@ -33,7 +33,7 @@ public:
     /*** Command ***/
     enum class Command : int
     { 
-        ACT_R, ACT_W, ACT, PRE, PREA, 
+        ACT_R, ACT_W, ACT, PRE, PREA,  // ACT_W and ACT_R has been added for the Round controller. They act exactly similar to ACT in terms if timings
         RD,  WR,  RDA,  WRA, 
         REF, PDE, PDX,  SRE, SRX, 
         MAX

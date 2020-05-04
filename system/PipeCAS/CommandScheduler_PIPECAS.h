@@ -106,7 +106,6 @@ namespace MCsim
 			srtNum_ACT = 0;
 			actCounter = 0;
 			casCounter = 0;
-			commandQueue[0]->setACT(0);
 			roundType = BusPacketType::RDA;
 			roundSRT = BusPacketType::RD;
 			prevCAS = BusPacketType::WRA;

@@ -32,6 +32,7 @@ namespace MCsim
 			unsigned rank = request->rank; //  Can be disabled (0) if there is one rank			
 			unsigned row = request->row;
 			unsigned col = request->col;
+			unsigned sa = request->subArray;
 
 			for(unsigned int bi = 0; bi < lookupTable[request->requestSize].first; bi++)
 			{
@@ -39,8 +40,8 @@ namespace MCsim
 				for(unsigned int bc = 0; bc < lookupTable[request->requestSize].second; bc++)
 				{
 					// Crack the request to the DRAM commands. It's close page -> ACT + RDA || ACT + WRA
-					commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
-					commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));
+					commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, sa, 0, 0));
+					commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, sa, request->data, 0));
 				}
 			}
 			return true;

@@ -12,7 +12,6 @@ CommandQueue::CommandQueue(bool perRequestor) // ctor
 	scheduledQueue = true;
 	requestorQueue = false;
 	requestorIndex = 0;
-	ACTdiff = false;
 	perRequestorEnable = perRequestor;
 }
 
@@ -120,12 +119,3 @@ void CommandQueue::removeCommand() // Remove a cmd from the general buffers (hrt
 		srtBuffer.erase(srtBuffer.begin());
 	}
 }
-
-void CommandQueue::setACT(unsigned int x) // Determine if the scheduler require different ACT for read/write (ACT_R and ACT_W)
-{
-	if(x == 1)
-		ACTdiff = true;
-	else
-		ACTdiff = false;	
-}
-

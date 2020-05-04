@@ -11,7 +11,8 @@ RequestQueue::RequestQueue(bool perRequestor, bool writeQueueEnable):
 {
 	flag = false;
 	if(writeQueueEnable) { // Low and high watermark must be chosen according to the design specifications 		
-		writeQueue = new WriteQueue(5,20);
+		//writeQueue = new WriteQueue(5,20);
+		writeQueue = new WriteQueue(4,10);
 	} 
 	else {
 		writeQueue = NULL;
@@ -93,6 +94,22 @@ unsigned int RequestQueue::getSize(bool requestor, unsigned int index)
 		return generalBuffer.size();
 	}
 }
+
+void RequestQueue::setWriteMode(bool set)
+{
+	writeMode = set;
+}
+
+bool RequestQueue::isWriteMode()
+{
+	return writeMode;
+}
+
+unsigned int RequestQueue::generalReadBufferSize(bool requestor)
+{
+	return generalBuffer.size();
+}
+
 // If care about the fairness
 Request* RequestQueue::getRequest(unsigned int reqIndex, unsigned int index)
 {

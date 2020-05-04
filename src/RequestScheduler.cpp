@@ -38,8 +38,7 @@ bool RequestScheduler::isRowHit(Request* request)
 				isHit = true; 
 			}
 		}	
-	}
-	
+	}	
 	return isHit;
 }
 void RequestScheduler::flushWriteReq(bool sw)
@@ -60,16 +59,17 @@ bool RequestScheduler::writeEnable(int qIndex)
 unsigned int RequestScheduler::bufferSize(unsigned int qIndex){
 	return requestQueue[qIndex]->getSize(false, 0);
 }
+
 Request* RequestScheduler::scheduleFR(unsigned int qIndex)
 {
 	for(unsigned int index=0; index < requestQueue[qIndex]->getSize(false, 0); index++) {		
-		//cout<<"the size of the request queue is  "<<requestQueue[qIndex]->getSize(false, 0)<<endl;
 		if(isRowHit(requestQueue[qIndex]->getRequestCheck(index))){
 			return requestQueue[qIndex]->getRequest(index);
 		}	
 	}
 	return requestQueue[qIndex]->getRequest(0);
 }
+
 Request* RequestScheduler::scheduleBLISS(unsigned int qIndex)
 {
 	flag = true;
@@ -139,10 +139,16 @@ bool RequestScheduler::isSchedulable(Request* request, bool open)
 {
 	if(request->requestType == DATA_READ)						
 	{
-		TRACE_REQ("TRACE-REQUEST:     REQ: READ"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);										
+		if(request->address > 999999){
+			TRACE_REQ("TRACE-REQUEST:READ"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);										}
+		else {
+			TRACE_REQ("TRACE-REQUEST:READ"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);}
 	}
 	else if(request->requestType == DATA_WRITE)	{
-		TRACE_REQ("TRACE-REQUEST:     REQ: WRITE"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);							
+		if(request->address > 999999){
+			TRACE_REQ("TRACE-REQUEST:WRITE"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);}
+		else {
+			 TRACE_REQ("TRACE-REQUEST:WRITE"<<"\t\t"<<clockCycle<<":"<<"\t\tAddress: "<<request->address<<"\t\tBank: "<<request->bank<<"\t\tColumn: "<<request->col<<"\t\tRow: "<<request->row);}								
 	}
 	return commandGenerator->commandGenerate(request, open);
 }

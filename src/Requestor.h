@@ -19,6 +19,7 @@ namespace MCsim
 {
 	class MemoryController;
 	class CommandGenerator;
+	class RequestScheduler;
 	class RequestQueue;
 
 	class Cache
@@ -78,16 +79,18 @@ namespace MCsim
 		unsigned long currAddr;
 		bool inOrder;
 		MemoryController* memoryController;
+		RequestScheduler* requestSCHEDULER;
 		Cache* localCache;
 
 		ifstream transFile;
-
 		bool waitingRequest;
 		bool readDone;
 		ofstream outTrace;
 
 		Request* pendingRequest;
 		std::vector< Request* > corePendingData;
+
+
 			
 		bool sim_done;
 		bool readingTraceFile();

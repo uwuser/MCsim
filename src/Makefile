@@ -1,18 +1,21 @@
 #CXX = clang++
 CXX = g++
-CXXFLAGS= -O3 -std=c++0x -Wall -pg -Wpedantic 
-#CXXFLAGS= -O3 -std=c++0x -g -pg -Wall -Wpedantic 
+CXXFLAGS= -O3 -std=c++11 -Wall -Wpedantic 
 # ######################################################
 # 		Addjust the following option based on need
 #CXXFLAGS += -DDEBUG_ENABLED
-#CXXFLAGS += -DCMD_TRACE_ENABLED
+CXXFLAGS += -DCMD_TRACE_ENABLED
 #CXXFLAGS += -DREQ_TRACE_ENABLED
-#CXXFLAGS += -DSINGLE_RANK_BANK_PRIVATIZATION 
+CXXFLAGS += -DSINGLE_RANK_BANK_PRIVATIZATION 
 #CXXFLAGS += -DMULTI_RANK_BANK_PRIVATIZATION 
 ########################################################
 #-Wextra
 
 EXE_NAME=MCsim
+
+STATIC_LIB_NAME := libmcsim.a
+LIB_NAME=libmcsim.so
+LIB_NAME_MACOS=libmcsim.dylib
 
 SRC = $(wildcard ../dram/*.cpp) $(wildcard *.cpp)
 # $(info SRC is $(SRC))
@@ -32,7 +35,18 @@ all: ${EXE_NAME}
 #   $@ target name, $^ target deps, $< matched pattern
 $(EXE_NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^ 
-	@echo "Built $@ successfully" 
+	@echo "Built $@ successfully"
+
+$(LIB_NAME): $(POBJ)
+	g++ -g -std=c++11 -shared -Wl,-soname,$@ -o $@ $^
+	@echo "Built $@ successfully"
+
+$(STATIC_LIB_NAME): $(LIB_OBJ)
+	$(AR) crs $@ $^
+
+$(LIB_NAME_MACOS): $(POBJ)
+	g++ -std=c++11 -dynamiclib -o $@ $^
+	@echo "Built $@ successfully"
 
 # build all .cpp files to .o files
 %.o : %.cpp

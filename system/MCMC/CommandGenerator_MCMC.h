@@ -27,8 +27,8 @@ namespace MCsim
 			unsigned address = request->address;
 			unsigned rank = request->rank;
 			unsigned bank = request->bank;
-			unsigned row = request->row;
-			unsigned col = request->col;
+			unsigned row  = request->row;
+			unsigned col  = request->col;
 
 			unsigned size = request->requestSize/dataBusSize; 
 			unsigned interleave = 1;
@@ -44,30 +44,30 @@ namespace MCsim
 			{
 				switch(interleave) {
 					case 1:
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0, 0));
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, 0, request->data, 0));
 						commandBuffer.back()->postCommand = true;
 						break;
 					case 2:
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+1, rank, 0, 0));	
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0, 0));
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+1, rank, 0, 0, 0));	
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, 0, request->data, 0));
 						commandBuffer.back()->postCommand = true;
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+1, rank, request->data, 0));	
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+1, rank, 0, request->data, 0));	
 						commandBuffer.back()->postCommand = true;
 						break;					
 					case 4:
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+1, rank, 0, 0));	
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));	
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0, 0));
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+1, rank, 0, 0, 0));	
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, 0, request->data, 0));	
 						commandBuffer.back()->postCommand = true;
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+2, rank, 0, 0));
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+1, rank, request->data, 0));
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+2,rank, 0, 0, 0));
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+1, rank, 0, request->data, 0));
 						commandBuffer.back()->postCommand = true;
-						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+3, rank, 0, 0));	
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+2, rank, request->data, 0));	
+						commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank+3, rank, 0, 0, 0));	
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+2, rank, 0, request->data, 0));	
 						commandBuffer.back()->postCommand = true;
-						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+3, rank, request->data, 0));	
+						commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank+3, rank, 0, request->data, 0));	
 						commandBuffer.back()->postCommand = true;
 						break;	
 					default:

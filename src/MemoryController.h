@@ -1,6 +1,8 @@
 #ifndef MEMORYCONTROLLER_H
 #define MEMORYCONTROLLER_H
 
+#include "SimulatorObject.h"
+
 #include <stdint.h>
 #include <cstdlib>
 #include <string>
@@ -16,25 +18,29 @@
 #include "RequestScheduler.h"
 #include "CommandGenerator.h"
 #include "CommandScheduler.h"
-//#include "RefreshMachine.h"
 
 namespace MCsim
 {
+	class MemoryDevice;
 	class MemorySystem;
 	class MemoryController
 	{
 	public:
 		// systemConfigFile includes info on memory channel and memory controller architecture
 		MemoryController(const string& systemConfigFile, function<void(Request&)> callback);
+		MemoryController(MemorySystem *ms, const string& systemConfigFile);
 		virtual ~MemoryController();
 		void displayConfiguration();
 		void setRequestor(unsigned int id, bool criticality);
-		void connectMemorySystem(MemorySystem* memSys);
+		void connectMemoryDevice(MemoryDevice* memDev);
 		bool addRequest(unsigned int requestorID, unsigned long long address, bool R_W, unsigned int size);
+		bool isWriteModeFromController();
 		void receiveData(BusPacket *bpacket);
 		void flushWrite(bool sw);
-		void step();
-
+		void update();
+		void returnReadData(const Request *req);
+		void writeDataDone(const Request *req);
+		unsigned int generalBufferSize();
 		void printResult();
 		void trackError(int id);
 		
@@ -59,7 +65,8 @@ namespace MCsim
 		// Memory Controller Configuration (scheduler name and memory version)
 		std::map<std::string, std::string> configTable; 
 		std::map<unsigned int, bool> requestorCriticalTable;
-		MemorySystem* memorySystem;
+		MemorySystem *parentMemorySystem;
+		MemoryDevice* memoryDevice;
 		
 		// Hardware Components
 		SchedulerRegister* schedulerRegister;

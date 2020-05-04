@@ -1,22 +1,21 @@
-#ifndef RAMULATOR_H
-#define RAMULATOR_H
+#ifndef RAMULATOR_DDR3_H
+#define RAMULATOR_DDR3_H
 
 #include "../dram/DRAM.h"
 #include "../dram/DDR3.h"
-#include "../dram/DDR4.h"
 
 #include <queue>
-#include "MemorySystem.h"
+#include "MemoryDevice.h"
 
 using namespace ramulator;
 namespace MCsim
 {
 	template <typename T>
-	class Ramulator: public MemorySystem
+	class Ramulator_DDR3: public MemoryDevice
 	{	
 	public:
 	bool DSARP_enabled;
-		Ramulator(T* spec, unsigned int ranks): MemorySystem(ranks)
+		Ramulator_DDR3(T* spec, unsigned int ranks): MemoryDevice(ranks)
 		{
 			spec->set_rank_number(ranks);
 			channel = new DRAM<T>(spec, T::Level::Channel);
@@ -252,15 +251,11 @@ namespace MCsim
 
 		bool command_check(BusPacket* command) 
 		{
-		//	cout<<"check command"<<endl;
 			if(command->postCommand) {
-			//	cout<<"piost command"<<endl;
 				return true;
 			}
 			else {
-				//cout<<"else "<<endl;
 				convert_addr(command);
-				//cout<<"after addr "<<endl;
 				return channel->check(convert_cmd(command), addr_vec.data(), clockCycle);				
 			}
 
@@ -268,10 +263,9 @@ namespace MCsim
 
 		void receiveFromBus(BusPacket* busPacket) 
 		{
-			// busPacket->rank
 			if(busPacket->postCommand) {
 				postBuffer.push_back(new BusPacket(busPacket->busPacketType, busPacket->requestorID, busPacket->address, 
-					busPacket->column, busPacket->row, busPacket->bank, 0, busPacket->data, busPacket->arriveTime));
+					busPacket->column, busPacket->row, busPacket->bank, 0, busPacket->subArray, busPacket->data, busPacket->arriveTime));
 				postCounter.push_back(get_constraints("tRCD"));
 				return;
 			}			
@@ -320,7 +314,6 @@ namespace MCsim
 			addr_vec[int(T::Level::Rank)] =  0 ;//command->rank;
 			 // No BankGroup
 			if(int(T::Level::Bank) == int(T::Level::Rank)+1) {
-				//cout<<"command bank  "<<command->bank<<endl;
 				addr_vec[int(T::Level::Bank)] = command->bank;
 			}
 			else {

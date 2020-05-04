@@ -12,13 +12,13 @@
 
 namespace MCsim
 {
-	class MemorySystem;
+	class MemoryDevice;
 	class CommandScheduler
 	{
 	public:
 		CommandScheduler(vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable);
 		virtual ~CommandScheduler();
-		void connectMemorySystem(MemorySystem* memSys);
+		void connectMemoryDevice(MemoryDevice* memDev);
 		// Scheduling Algoirthm
 		virtual BusPacket* commandSchedule() = 0;
 		void commandClear();
@@ -31,7 +31,7 @@ namespace MCsim
 		
 	protected:
 		
-		MemorySystem* memorySystem;
+		MemoryDevice* memoryDevice;
 		RefreshMachine* refreshMachine;
 		
 		std::vector<CommandQueue*>& commandQueue;
@@ -48,6 +48,8 @@ namespace MCsim
 		bool isIssuable(BusPacket* cmd);
 		// Issue the cmd
 		void sendCommand(BusPacket* cmd, unsigned int index, bool bypass);
+		bool isIssuableRefresh(BusPacket* cmd); 
+
 		void init_config();
 		void clean_buffers();
 

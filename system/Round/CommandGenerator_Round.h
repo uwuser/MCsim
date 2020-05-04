@@ -29,28 +29,28 @@ namespace MCsim
 			if(!open && !first[request->bank]) 
 			{
 				if (actdefine == 0){
-					commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, NULL, 0));
-					commandBuffer.push(new BusPacket(ACT_R, id, address, 0, row, bank, rank, NULL, 0));	
+					commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, 0, NULL, 0));
+					commandBuffer.push(new BusPacket(ACT_R, id, address, 0, row, bank, rank, 0, NULL, 0));	
 				}
 				else{
-					commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, NULL, 0));
-					commandBuffer.push(new BusPacket(ACT_W, id, address, 0, row, bank, rank, NULL, 0));		
+					commandBuffer.push(new BusPacket(PRE, id, address, 0, row, bank, rank, 0, NULL, 0));
+					commandBuffer.push(new BusPacket(ACT_W, id, address, 0, row, bank, rank, 0, NULL, 0));		
 				}
 			}
 			else if(!open && first[request->bank]) 
 			{		
 				if (actdefine == 0){
 					
-					commandBuffer.push(new BusPacket(ACT_R, id, address, 0, row, bank, rank, NULL, 0));	
+					commandBuffer.push(new BusPacket(ACT_R, id, address, 0, row, bank, rank, 0, NULL, 0));	
 					first[request->bank] = false;
 				}
 				else{
-					commandBuffer.push(new BusPacket(ACT_W, id, address, 0, row, bank, rank, NULL, 0));		
+					commandBuffer.push(new BusPacket(ACT_W, id, address, 0, row, bank, rank, 0, NULL, 0));		
 					first[request->bank] = false;
 				}
 			}
 			for(unsigned int x = 0; x < size; x++) {
-				commandBuffer.push(new BusPacket(CAS, id, address, col+size, row, bank, rank, request->data, 0));
+				commandBuffer.push(new BusPacket(CAS, id, address, col+size, row, bank, rank, 0, request->data, 0));
 			}
 			return true;					
 		}

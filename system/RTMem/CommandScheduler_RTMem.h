@@ -19,7 +19,6 @@ namespace MCsim
 			checkCommand = NULL;
 			BusPacket* tempCAS = NULL;
 			BusPacket* tempACT = NULL;
-			commandQueue[0]->setACT(0);
 			for(unsigned int index = 0; index < commandQueue.size(); index++) {
 				if(commandQueue[index]->getSize(true) > 0) {
 					checkCommand = commandQueue[index]->getCommand(true);

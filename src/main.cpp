@@ -12,8 +12,9 @@
 #include "Requestor.h"
 #include "Request.h"
 #include "MemoryController.h"
-#include "Ramulator.h"
+#include "Ramulator_DDR3.h"
 #include "Ramulator_DDR4.h"
+#include "Ramulator_DSARP.h"
 
 using namespace std;
 using namespace MCsim;
@@ -34,16 +35,16 @@ void usage() {
 
 int main(int argc, char **argv)
 {	
-	int argument = 0;
-	string systemIniFilename = "system.ini";
-	unsigned requestors = 8;
-	string traceFileName = "mem.trc";
+	int argument = 0;	
+	unsigned requestors = 4;	
 	unsigned cycles = 0;
 	unsigned int channels = 1;
 	unsigned int ranks = 1;
 	string deviceGene = "DDR3";
 	string deviceSpeed = "1600H";
 	string deviceSize = "2Gb_x8";
+	string traceFileName = "mem.trc";
+	string systemIniFilename = "system.ini";
 
 	while(1) {
 		static struct option options[] = {
@@ -69,7 +70,7 @@ int main(int argc, char **argv)
 			case 'h':
 			case '?':
 				usage();
-				exit(0);
+				::exit(0);
 			case 'n':
 				requestors = atoi(optarg);
 				break;
@@ -94,14 +95,14 @@ int main(int argc, char **argv)
 			case 'D':
 				deviceSpeed = string(optarg);
 				break;
-			case 'O':
+			case 'S':
 				deviceSize = string(optarg);
 				break;
 		}
 	}
 	
 	// Channel, MemoryController, Requestor
-	map<int, MemorySystem*> channelsMap;
+	map<int, MemoryDevice*> channelsMap;
 	map<int, MemoryController*> controllersMap;
 	map<int, Requestor*> requestorsMap;
 	// Callback function pass complete request to requestor
@@ -112,30 +113,35 @@ int main(int argc, char **argv)
 	for(unsigned int c = 0; c < channels; c++) {
 		DEBUG("MEMORY CONTROLLER IS:   "<<systemIniFilename);
 		controllersMap[c] = new MemoryController(systemIniFilename, callBack);
-		MemorySystem* memSys = NULL;
+		MemoryDevice* memDev = NULL;
 		const string GeneSpeed = deviceGene + '_' + deviceSpeed;
 		const string GeneSize = deviceGene + '_' + deviceSize;
-		// New devices can be added here ...
+		// New devices can be added here - ramulator interface for each devce needs to be added as well
 		if (deviceGene == "DDR3") {
 			DDR3* ddr3 = new DDR3(GeneSize, GeneSpeed);
-			memSys = new Ramulator<DDR3>(ddr3, ranks);		
+			memDev = new Ramulator_DDR3<DDR3>(ddr3, ranks);		
 		}
 		else if (deviceGene == "DDR4") {
 			DDR4* ddr4 = new DDR4(GeneSize, GeneSpeed);
-			memSys = new Ramulator_DDR4<DDR4>(ddr4, ranks);  		 			
+			memDev = new Ramulator_DDR4<DDR4>(ddr4, ranks);  		 			
+	    } 
+		else if (deviceGene == "DSARP") {
+			DSARP::Org test_org = DSARP::Org::DSARP_8Gb_x8; 	
+			DSARP* dsddr3_dsarp = new DSARP(test_org, DSARP::Speed::DSARP_1333, DSARP::Type::DSARP, 64);	 			
+			memDev = new Ramulator_DSARP<DSARP>(dsddr3_dsarp, ranks); 
 	    } 
 		else {
 			DEBUG("WRONG DRAM STANDARD");
 		}		
-		channelsMap[c] = memSys;
-		memSys->connectMemoryController(controllersMap[c]); 
-		controllersMap[c]->connectMemorySystem(memSys);
+		channelsMap[c] = memDev;
+		memDev->connectMemoryController(controllersMap[c]); 
+		controllersMap[c]->connectMemoryDevice(memDev);
 	}
 	ifstream memTrace;
 	memTrace.open(traceFileName.c_str());
 	if(!memTrace.is_open()) {
 		DEBUG("ERROR:  COULD NOT OPEN TRACE FILE");
-		exit(0);
+		::exit(0);
 	}
 	bool inOrder = true;
 	bool isHRT = true;
@@ -146,7 +152,7 @@ int main(int argc, char **argv)
 		switch(id)
 		{
 			case 0:
-				inOrder = false;
+				inOrder = true;
 				isHRT = true;
 				requestSize = 64;
 				break;
@@ -225,7 +231,7 @@ int main(int argc, char **argv)
 		// Step Memory System
 		for(unsigned int c=0; c < channels; c++) {
 			// Step MCsim
-			controllersMap[c]->step();
+			controllersMap[c]->update();
 			// Step DRAM Device
 			channelsMap[c]->update();
 		}			
@@ -252,6 +258,6 @@ int main(int argc, char **argv)
 	}
 	requestorsMap.clear();
 	std::cout<<"Simulation End @ "<<currentClockCyle<<" time = "<<((end-begin))<<std::endl;
-	exit(0);
+	::exit(0);
 	return 0;
 }

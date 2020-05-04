@@ -1,4 +1,4 @@
-
+// This one is a dupliacte of the other one in FRFCFS system directory
 #ifndef COMMANDSCHEDULER_FRFCFS_H
 #define COMMANDSCHEDULER_FRFCFS_H
 
@@ -20,7 +20,6 @@ namespace MCsim
 
 		BusPacket* commandSchedule()
 		{
-			
 			scheduledCommand = NULL;
 			checkCommand = NULL;
 			checkCommand_temp_1 = NULL;
@@ -153,7 +152,8 @@ namespace MCsim
 							{
 								if(isIssuable(checkCommand))
 								{
-									if(checkCommand_temp_2 != NULL){
+									if(checkCommand_temp_2 != NULL)
+									{
 										if((checkCommand->busPacketType == RD || checkCommand->busPacketType == WR)){
 											if(checkCommand->arriveTime < checkCommand_temp_2->arriveTime){
 											checkCommand_temp_2 = checkCommand;

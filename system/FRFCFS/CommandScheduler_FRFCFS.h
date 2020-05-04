@@ -146,9 +146,9 @@ namespace MCsim
 					{
 						checkCommand = commandQueue[index]->getCommand(true);
 						if(checkCommand != NULL)
-						{								
+						{						
 							if(isReady(checkCommand,index))
-							{
+							{					
 								if(isIssuable(checkCommand))
 								{
 									if(checkCommand_temp_2 != NULL)

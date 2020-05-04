@@ -219,7 +219,6 @@ DRAM<T>::DRAM(T* spec, typename T::Level level) :
 
     // recursively construct my children
     for (int i = 0; i < child_max; i++) {
-        //cout<<"children max  iss"<<child_max<<endl;
         DRAM<T>* child = new DRAM<T>(spec, typename T::Level(child_level));
         child->parent = this;
         child->id = i;
@@ -267,17 +266,13 @@ typename T::Command DRAM<T>::decode(typename T::Command cmd, const int* addr)
 template <typename T>
 bool DRAM<T>::check(typename T::Command cmd, const int* addr, long clk)
 {
-    //std::cout << "Checking " << int(cmd) << " " << next[int(cmd)]<< " "<<clk<<std::endl;
     if (next[int(cmd)] != -1 && clk < next[int(cmd)])
         return false; // stop recursion: the check failed at this level
   
     int child_id = addr[int(level)+1];
-      //cout<<"child id  "<<child_id<<"   and level is "<<level<<endl;
     if (child_id < 0 || level == spec->scope[int(cmd)] || !children.size()){
-        //cout<<"child id after  "<<child_id<<endl;
         return true; // stop recursion: the check passed at all levels
     }
- //cout<<"after  "<<child_id<<" and childere size is  "<<children.size()<<endl;
     // recursively check my child
     return children[child_id]->check(cmd, addr, clk);
 }

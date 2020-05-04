@@ -14,9 +14,7 @@ namespace MCsim
 	public:
 		CommandScheduler_ORP(vector<CommandQueue*>& commandQueues, const map<unsigned int, bool>& requestorTable):
 			CommandScheduler(commandQueues, requestorTable)
-		{
-			commandQueue[0]->setACT(0);
-		}
+		{}
 		~CommandScheduler_ORP() // dtor
 		{
 			for(auto it=cmdFIFO.begin(); it!=cmdFIFO.end(); it++) {

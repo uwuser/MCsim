@@ -42,6 +42,7 @@ Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	currAddr = rowHitAddr;
 }
 
+
 Requestor::~Requestor()
 {
 	corePendingData.clear();
@@ -71,12 +72,12 @@ void Requestor::sendRequest(Request* request) {
 		// Register the arrival time for request
 		request->arriveTime = currentClockCycle;
 		// Pushed to the corePending queue for the future use upon returning
-		corePendingData.push_back(request);	
+			corePendingData.push_back(request);	
 	}
 }
 
 void Requestor::returnData(Request* returnTrans)
-{
+{	
 	if(!corePendingData.empty()) {
 		for(unsigned index = 0; index < corePendingData.size(); index++) {
 			if(returnTrans->address == corePendingData[index]->address) {
@@ -103,21 +104,18 @@ void Requestor::returnData(Request* returnTrans)
 
 void Requestor::update()
 {
-	latency++;		
-	// Control the suspecious WC latency for RT controllers - Disable for High Performance Controllers
-	//if(wcLatency >= 1000 && requestorID == 0) {
-	//DEBUG("worst case @ "<<currentClockCycle<<" REQ"<<requestorID<<" == "<<wcLatency);
-	//DEBUG("A Worst-case is exceed 1000 cycles and the simulation aborted. If running OoO, please deactivate this control");
-	//abort();
-	//}	 
+	latency++;	
 	sim_done = readingTraceFile();
 	if(pendingRequest != NULL) {
 		// Send the request if the arrival time is reached
-		if(pendingRequest->arriveTime <= currentClockCycle && corePendingData.size() <= RequestBufferSize) {
-		//if(pendingRequest->arriveTime <= currentClockCycle) {
-			sendRequest(pendingRequest);
-			pendingRequest = NULL;
-		}	
+		if (!memoryController->isWriteModeFromController())
+		{
+			if(pendingRequest->arriveTime <= currentClockCycle && memoryController->generalBufferSize() <= RequestBufferSize && corePendingData.size() <= RequestBufferSize) 
+			{
+				sendRequest(pendingRequest);
+				pendingRequest = NULL;			
+			}
+		}		
 	}
 	else
 	{
@@ -178,8 +176,7 @@ bool Requestor::readingTraceFile()
 				bypass_read = true;			
 							
 		}
-		else {
-			DEBUG("Tracefile Finished");			
+		else {		
 			return true;
 		}
 	}
@@ -198,7 +195,7 @@ void Requestor::parseTraceFileLine(string &line, uint64_t &addr, enum RequestTyp
 	addressStr = line.substr(spaceIndex, line.find_first_of(" ", spaceIndex) - spaceIndex);
 	istringstream b(addressStr.substr(2)); // Gets rid of 0x
 	b>>hex>>addr;
-	addr = addr >> 6; // For verification of Ramulator
+	//addr = addr >> 6; // For verification of Ramulator
 	previousIndex = line.find_first_of(" ", spaceIndex);
 
 	//Command Decoding

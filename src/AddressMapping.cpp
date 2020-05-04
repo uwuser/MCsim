@@ -9,7 +9,7 @@ AddressMapping::AddressMapping(const std::string& format, const unsigned int (&m
 	for(unsigned index=0; index<format.size(); index++) {
 		memIndex = format[index] - '0';
 		if(memIndex > memOrg::Column) {
-			std::cout<<"Wrong Operation"<<std::endl;
+			DEBUG("Wrong Operation")
 			abort();
 		}
 		else {
@@ -82,7 +82,7 @@ void AddressMapping::addressMapping(Request* request)
 	}
 	request->bank = request->requestorID;
 #endif
-	request->addressMap[Rank] = request->rank;
+	request->addressMap[Rank] = 0;//request->rank; enable for the rank-based controllers
 	request->addressMap[BankGroup] = request->bankGroup;
 	request->addressMap[Bank] = request->bank;
 	request->addressMap[SubArray] = request->subArray;

@@ -16,7 +16,6 @@ namespace MCsim
 		CommandScheduler_DCmc(vector<CommandQueue*>& commandQueues, const map<unsigned int, bool>& requestorTable):
 			CommandScheduler(commandQueues, requestorTable)
 		{
-			commandQueue[0]->setACT(0);
 			for(unsigned int index = 0; index < commandQueue.size(); index++) {
 				queuePending.push_back(false);
 			}

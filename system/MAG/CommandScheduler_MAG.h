@@ -23,7 +23,6 @@ namespace MCsim
 			indexRT = 0;
 			indexHP = 0;
 			bypass = false;
-			commandQueue[0]->setACT(0);
 
 			for(unsigned int index=0; index<commandQueue.size(); index++) {
 				compensateCommands.push_back(vector<BusPacket*>());
@@ -36,11 +35,11 @@ namespace MCsim
 			{
 				BusPacket* tempCmd = commandQueue[queueIndex]->getCommand(false);
 				if(tempCmd->busPacketType < ACT) {
-					compensateCommands[queueIndex].push_back(new BusPacket(PRE, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, NULL, 0));
-					compensateCommands[queueIndex].push_back(new BusPacket(ACT, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, NULL, 0));
+					compensateCommands[queueIndex].push_back(new BusPacket(PRE, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, 0, NULL, 0));
+					compensateCommands[queueIndex].push_back(new BusPacket(ACT, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, 0, NULL, 0));
 				}
 				else if(tempCmd->busPacketType == ACT) {
-					compensateCommands[queueIndex].push_back(new BusPacket(PRE, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, NULL, 0));
+					compensateCommands[queueIndex].push_back(new BusPacket(PRE, 0, 0, 0, 0, tempCmd->bank, tempCmd->rank, 0, NULL, 0));
 				}
 				else {
 					return;

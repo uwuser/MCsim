@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 #include <queue>
-
 using namespace MCsim;
 
 namespace MCsim
@@ -23,6 +22,7 @@ namespace MCsim
 		// Used to implement the request scheduling algorithm
 		virtual void requestSchedule() = 0;
 		void flushWriteReq(bool sw);
+		bool writeMode();
 		void step();
 		
 	protected:
@@ -41,6 +41,7 @@ namespace MCsim
 		Request* scheduleF(unsigned int qIndex);
 		Request* scheduleFR_Next(unsigned int qIndex);
 		Request* scheduleBLISS(unsigned int qIndex);
+		
 		// Open Row Checker
 		std::map< unsigned int, std::map< unsigned int, unsigned int long > > bankTable;
 		// Update open row
@@ -57,6 +58,7 @@ namespace MCsim
 		Request* checkRequest;
 		Request* req1;
 		Request* req2;
+		bool sw;
 		bool FR_open;
 		unsigned int id;
 		int blacklist [36];

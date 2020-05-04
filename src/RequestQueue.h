@@ -18,11 +18,13 @@ namespace MCsim
 		virtual ~RequestQueue();
 		bool isWriteEnable();
 		bool isPerRequestor();
-		bool flag;
+		bool flag, writeMode;
 		bool insertRequest(Request* request);
 		// Get the number of requestor buffer 
 		unsigned int getQueueSize();	
 		unsigned int writeSize();	
+		void setWriteMode(bool set);
+		bool isWriteMode();
 		// Get the number of requests in either the individual buffer, or general buffer
 		// The index for requestor is the index in the requestorOrder vector, not ID
 		unsigned int getSize(bool requestor, unsigned int index);		
@@ -34,7 +36,7 @@ namespace MCsim
 		Request* scheduleWritecheck();
 		void removeWriteRequest();
 		bool switchMode();
-		
+		unsigned int generalReadBufferSize(bool requestor);
 		// Check request from general buffer	
 		Request* getRequestCheck(unsigned int index);
 
@@ -59,11 +61,15 @@ namespace MCsim
 			void insertWrite(Request* request){ writeQueue.push_back(request); }
 			unsigned int bufferSize() {return writeQueue.size(); }
 			bool highWatermark() {
-				if(writeQueue.size() >= highwatermark) {return true;}
+				if(writeQueue.size() > highwatermark) {
+					
+					return true;
+					}
 				else{ return false; }
 			}
 			bool lowWatermark() {
-				if(writeQueue.size() <= lowwatermark) { return true; }
+				if(writeQueue.size() < lowwatermark) { 
+					return true; }
 				else {return false; }
 			}
 			Request* getWrite(unsigned int index){ 
@@ -76,9 +82,7 @@ namespace MCsim
 				return temp; 
 			}
 			void removeWrite(unsigned int index){ 
-				cout<<"before actual removing write"<<endl;
 				writeQueue.erase(writeQueue.begin()+index);
-				cout<<"after actual removing write"<<endl; 
 				}
 
 

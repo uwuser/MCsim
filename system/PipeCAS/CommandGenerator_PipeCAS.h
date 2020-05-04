@@ -41,15 +41,15 @@ namespace MCsim
 			unsigned bank = request->bank;
 
 			if(requestorCriticalTable.at(request->requestorID)) {
-				commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
-				commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));
+				commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0, 0));
+				commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, 0, request->data, 0));
 			}
 			else {
 				if(!open) {
-					commandBuffer.push(new BusPacket(PRE, id, address, col, row, bank, rank, 0, 0));
-					commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0));
+					commandBuffer.push(new BusPacket(PRE, id, address, col, row, bank, rank, 0, 0, 0));
+					commandBuffer.push(new BusPacket(ACT, id, address, col, row, bank, rank, 0, 0, 0));
 				}
-				commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, request->data, 0));
+				commandBuffer.push(new BusPacket(CAS, id, address, col, row, bank, rank, 0, request->data, 0));
 			}
 			return true;
 		}

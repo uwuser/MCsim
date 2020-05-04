@@ -1,7 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include "CommandScheduler.h"
-#include "MemorySystem.h"
+#include "MemoryDevice.h"
 #include "global.h"
 using namespace std;
 
@@ -19,7 +19,7 @@ requestorCriticalTable(requestorTable)
 		reqCmdQueueTimer.push_back(std::map<unsigned int, std::map<unsigned int, unsigned int> >());
 	}
 
-	memorySystem = NULL;
+	memoryDevice = NULL;
 	refreshMachine = NULL;
 	scheduledCommand = NULL;
 	checkCommand = NULL;
@@ -31,17 +31,17 @@ CommandScheduler::~CommandScheduler()
 {
 	cmdQueueTimer.clear();	
 }
-void CommandScheduler::connectMemorySystem(MemorySystem* memSys)
+void CommandScheduler::connectMemoryDevice(MemoryDevice* memDev)
 {
-	memorySystem = memSys;
-	ranks = memorySystem->get_Rank();
-	banks = memorySystem->get_Bank();
-	refreshMachine = new RefreshMachine(commandQueue, ranks, banks, getTiming("tREFI"), getTiming("tRFC"));
+	memoryDevice = memDev;
+	ranks = memoryDevice->get_Rank();
+	banks = memoryDevice->get_Bank();
+	refreshMachine = new RefreshMachine(commandQueue, ranks, banks, getTiming("tREFI"), getTiming("tRFCpb"), getTiming("tRFCab"), getTiming("tRFC"),getTiming("tRCD"));
 }
 
 unsigned int CommandScheduler::getTiming(const string& param) // Accsess the Ramulator backend to determine the timing specifications
 {
-	return memorySystem->get_constraints(param);
+	return memoryDevice->get_constraints(param);
 }
 
 bool CommandScheduler::refreshing() // Perform refresh
@@ -52,16 +52,39 @@ bool CommandScheduler::refreshing() // Perform refresh
 void CommandScheduler::refresh() // Indicator of reaching refresh interval
 {
 	BusPacket* tempCmd = NULL;
-	refreshMachine->refresh(tempCmd);
-	if(tempCmd != NULL) {
-		if(isIssuable(tempCmd)) {
-			memorySystem->receiveFromBus(tempCmd);
-			refreshMachine->popCommand();
-			
-		}	
-	}
+	if(refreshMachine->reachInterval())
+	{
+		refreshMachine->refresh(tempCmd);
+		if(tempCmd != NULL) {
+			if(isIssuableRefresh(tempCmd)) {
+				if(tempCmd->busPacketType == PRE)						
+				{
+					TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<tempCmd->address<<"\t\tBank: "<<tempCmd->bank<<"\t\tColumn: "<<tempCmd->column<<"\tRow: "<<tempCmd->row);										
+				}
+				else if(tempCmd->busPacketType == REF)
+				{
+					TRACE_CMD("TRACE-COMMAND:REF"<<"\t"<<clock<<":"<<"\t\tAddress: "<<tempCmd->address<<"\t\tBank: "<<tempCmd->bank<<"\t\tColumn: "<<tempCmd->column<<"\tRow: "<<tempCmd->row);	
+				}
+				else if(tempCmd->busPacketType == REFPB)
+				{				
+					TRACE_CMD("TRACE-COMMAND:REFPB"<<"\t"<<clock<<":"<<"\t\tAddress: "<<tempCmd->address<<"\t\tBank: "<<tempCmd->bank<<"\t\tColumn: "<<tempCmd->column<<"\tRow: "<<tempCmd->row);	
+				}
+				else if(tempCmd->busPacketType == PREA)
+				{
+				 	TRACE_CMD("TRACE-COMMAND:PREA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<tempCmd->address<<"\t\tBank: "<<tempCmd->bank<<"\t\tColumn: "<<tempCmd->column<<"\tRow: "<<tempCmd->row);	
+				}	
+				else if(tempCmd->busPacketType == ACT)
+				{
+					if(refreshMachine->busyBank(tempCmd->bank) == false)
+				 		TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<tempCmd->address<<"\t\tBank: "<<tempCmd->bank<<"\t\tColumn: "<<tempCmd->column<<"\tRow: "<<tempCmd->row);	
+				}					
+				memoryDevice->receiveFromBus(tempCmd);
+				refreshMachine->popCommand();				
+			}	
+		}
 	tempCmd = NULL;
 	delete tempCmd;
+	}	
 }
 
 bool CommandScheduler::isReady(BusPacket* cmd, unsigned int index) // Each command queue share the same command ready time
@@ -92,9 +115,18 @@ bool CommandScheduler::isReady(BusPacket* cmd, unsigned int index) // Each comma
 	return true;
 }
 
+bool CommandScheduler::isIssuableRefresh(BusPacket* cmd) 
+{		
+	return memoryDevice->command_check(cmd);
+}
 bool CommandScheduler::isIssuable(BusPacket* cmd) // Check if the command is issueable on the channel
-{
-	return memorySystem->command_check(cmd);
+{	
+	if(refreshMachine->busyBank(cmd->bank) == false){	
+		return memoryDevice->command_check(cmd);	
+	}
+	else{
+		return false;
+	}
 }
 
 void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypass) // Send the actual command to the device
@@ -103,21 +135,45 @@ void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypa
 	if(commandQueue[index]->isPerRequestor()) {
 		for(unsigned int type = RD; type != PDE; type++) {
 			reqCmdQueueTimer[index][cmd->requestorID][type] = std::max(reqCmdQueueTimer[index][cmd->requestorID][type], 
-			memorySystem->command_timing(cmd, static_cast<BusPacketType>(type)));
+			memoryDevice->command_timing(cmd, static_cast<BusPacketType>(type)));
 		}
 		// For the command trace option
 		if(cmd->busPacketType == PRE)						
 		{
-			TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);										
-		}
-		else if(cmd->busPacketType == RD){
-			TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);									
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}
+			else {
+				TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}										}
+		else if(cmd->busPacketType == RD)
+		{						
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}										
+			else { 
+				TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}			
 		}
 		else if(cmd->busPacketType == WR){
-			TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);										
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}									
+		}
+		else if(cmd->busPacketType == WRA){
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:WRA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:WRA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}									
+		}
+		else if(cmd->busPacketType == RDA){
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:RDA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:RDA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}									
 		}
 		else if(cmd->busPacketType == ACT || cmd->busPacketType == ACT_R || cmd->busPacketType == ACT_W){
-			TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);							
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}
+			else {
+				TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}								
 		}	
 		commandQueue[index]->removeCommand(cmd->requestorID);
 	}
@@ -126,7 +182,7 @@ void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypa
 		{
 			for(unsigned int type = RD; type != PDE; type++) {
 				cmdQueueTimer[index][type] = std::max(cmdQueueTimer[index][type], 
-					memorySystem->command_timing(cmd, static_cast<BusPacketType>(type)));
+					memoryDevice->command_timing(cmd, static_cast<BusPacketType>(type)));
 			}		
 			commandQueue[index]->removeCommand();	
 		}
@@ -134,25 +190,50 @@ void CommandScheduler::sendCommand(BusPacket* cmd, unsigned int index, bool bypa
 		{
 			for(unsigned int type = RD; type != PDE; type++) {
 				cmdQueueTimer[index][type] = std::max(cmdQueueTimer[index][type], 
-					memorySystem->command_timing(cmd, static_cast<BusPacketType>(type)));
+					memoryDevice->command_timing(cmd, static_cast<BusPacketType>(type)));
 			}
 		}
 		// For the command trace option
 		if(cmd->busPacketType == PRE)						
 		{
-			TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);										
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}
+			else {
+				TRACE_CMD("TRACE-COMMAND:PRE"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}															
 		}
 		else if(cmd->busPacketType == RD){
-			TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	
+			}										
+			else { 
+				TRACE_CMD("TRACE-COMMAND:RD"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}	
 		}
 		else if(cmd->busPacketType == WR){
-			TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:WR"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}	
+		}
+		else if(cmd->busPacketType == WRA){
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:WRA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:WRA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}									
+		}
+		else if(cmd->busPacketType == RDA){
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:RDA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);											}
+			else {
+				TRACE_CMD("TRACE-COMMAND:RDA"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}									
 		}
 		else if(cmd->busPacketType == ACT || cmd->busPacketType == ACT_R || cmd->busPacketType == ACT_W){
-			TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);								
+			if(cmd->address > 999999){
+				TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);	}
+			else {
+				TRACE_CMD("TRACE-COMMAND:ACT"<<"\t"<<clock<<":"<<"\t\tAddress: "<<cmd->address<<"\t\tBank: "<<cmd->bank<<"\t\tColumn: "<<cmd->column<<"\tRow: "<<cmd->row);}						
 		}	
 	}
-	memorySystem->receiveFromBus(scheduledCommand);
+	memoryDevice->receiveFromBus(scheduledCommand);
 }
 void CommandScheduler::commandClear()
 {
@@ -185,5 +266,6 @@ void CommandScheduler::tick()
 		}
 	}
 	refreshMachine->step();
+	DEBUG("clock  "<<clock);
 	clock++;
 }

@@ -1,61 +1,59 @@
+
+
 #ifndef MEMORYSYSTEM_H
 #define MEMORYSYSTEM_H
 
-#include <string>
-#include <map>
-#include <vector>
-#include <queue>
-#include <fstream>
-#include "BusPacket.h"
+
+#include "SimulatorObject.h"
+#include "MemoryController.h"
+#include "Callback.h"
+#include <deque>
+#include "Request.h"
+#include "Ramulator_DDR3.h"
+#include "Ramulator_DDR4.h"
+#include "Ramulator_DSARP.h"
+
 
 namespace MCsim
 {
-	class MemoryController;
-	class MemorySystem
-	{
-	public:
-		MemorySystem(unsigned int ranks);
-		virtual ~MemorySystem();
-		void connectMemoryController(MemoryController* memCtlr);
-		void update();
-		unsigned int get_DataBus();
-		unsigned int get_Rank();
-		unsigned int get_BankGroup();
-		unsigned int get_Bank();
-		unsigned long get_Row();
-		unsigned long get_Column();
-		virtual float get_constraints(const std::string& parameter) = 0;
-		virtual long command_timing(BusPacket* command) = 0;
-		virtual unsigned int command_timing(BusPacket* command, int type) = 0;
-		virtual bool command_check(BusPacket* command) = 0;
-		virtual void receiveFromBus(BusPacket* busPacket) = 0;
+typedef CallbackBase<void,unsigned,uint64_t,uint64_t> Callback_t;
+class MemorySystem : public SimulatorObject
+{
+	
+public:
+	//functions
+	MemorySystem(unsigned int numRequestors, unsigned id, const string &systemIniFilename, const string &deviceGene,  const string &deviceSpeed, const string &deviceSize, unsigned int ranks);
 
-	protected:
-		unsigned int clockCycle;
-		unsigned int ranks;
-		unsigned int bankGroups;
-		unsigned int banks;
-		unsigned int subArrays;
-		unsigned int dataBusWidth;
-		unsigned long rows;
-		unsigned long columns;
+	virtual ~MemorySystem();
+	void update();
+	bool addRequest(unsigned int requestorID, unsigned long long address, bool R_W, unsigned int size);
+	void printStats(bool finalStats);
+	
+	void RegisterCallbacks(
+	    Callback_t *readDone,
+	    Callback_t *writeDone);
 
-		MemoryController* memoryController;
+	//fields
+	MemoryController *memoryController;
+	MemoryDevice* memDev;
+	//function pointers
+	Callback_t* ReturnReadData;
+	Callback_t* WriteDataDone;
+	//TODO: make this a functor as well?
+	
+	unsigned systemID;
+	unsigned int numberRequestors;
 
-		std::vector<unsigned int> dataCycles;
-		std::vector<BusPacket*> pendingReadData;
-		std::vector<BusPacket*> postBuffer;
-		std::vector<int> postCounter;
-		
-		typedef std::map<unsigned int, std::map<unsigned int, long> > dataArray;
-		std::vector< std::vector< dataArray > > memoryArray;
-		
-		void* readDataArray(BusPacket* load);
-		void updateDataArray(BusPacket* store);
-		void generateData(BusPacket* cmd);
-
-		std::ofstream commandTrace;
-	};
+private:
+	
+	string systemIniFilename;
+	string deviceGene;
+	string deviceSpeed;
+	string deviceSize;
+	
+	unsigned int numberRanks;
+};
 }
 
-#endif /* MEMORYSYSTEM_H */
+#endif
+

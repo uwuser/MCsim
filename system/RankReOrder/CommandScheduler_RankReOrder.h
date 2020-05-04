@@ -25,7 +25,6 @@ namespace MCsim
 		{
 			rankIndex = 0;
 			rank_num = 2;
-			commandQueue[0]->setACT(0);
 			bundlingType = BusPacketType::RD;	// Read Type
 			for(unsigned int index = 0; index < commandQueue.size(); index++) {
 				queuePending.push_back(false);

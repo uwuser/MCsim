@@ -14,7 +14,6 @@ namespace MCsim
 		virtual ~CommandQueue();
 		// Insert cmd based on either general criticality or requestorID
 		bool insertCommand(BusPacket* command, bool critical);
-		bool ACTdiff;
 		bool isPerRequestor();
 		// Check size of buffer
 		unsigned int getRequestorIndex();
@@ -29,7 +28,6 @@ namespace MCsim
 		// Remove most recently accessed cmd (from requestor queue or general fifo)
 		void removeCommand(unsigned int requestorID);
 		void removeCommand();
-		void setACT(unsigned int x);
 		
 	private:
 		// Indicate if perRequestor buffer is enabled

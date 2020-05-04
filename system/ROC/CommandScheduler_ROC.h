@@ -36,7 +36,6 @@ namespace MCsim
 			prevCmd = RD;
 			prevRank = 0;
 			ranks = 4;
-			commandQueue[0]->setACT(0);
 		}
 		BusPacket* commandSchedule()
 		{
