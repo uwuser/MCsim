@@ -55,7 +55,11 @@ In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the 
 
 # Building and Running MCsim - full-system simulation
 
-MCsim can be integrated in full-system simulators. We provide a library (linmcsim.so) in order to prepare the interfaces for the CPU simulators.
+MCsim can be integrated in full-system simulators. We provide a library (libmcsim.so) in order to prepare the interfaces for the CPU simulators. After building the MCsim, follow: 
+
+```
+ $ make libmcsim.so
+```
  
 # MCsim Output Modes 
 
