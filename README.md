@@ -61,6 +61,24 @@ MCsim can be integrated in full-system simulators. We provide a library (libmcsi
  $ make libmcsim.so
 ```
  
+# Memory Controller Configurations
+A specific memory controller is built by a configuration file (system.ini}) to define the structure of the queues as well as the operation of each hardware block. As an example, we show the configuration for the ORP controller, which requires per requestor buffers and employs "DIRECT" request arbitration, "OPEN" command generation and a specific "ORP" command scheduling policy.
+
+```
+RequestBuffer=0000    // request queue per level
+ReqPerREQ=1           // request queue per requestor
+WriteBuffer=0         // dedicated queue for write requests
+CommandBuffer=0000    // command queue per level
+CmdPerREQ=1           // command queue per requestor
+// scheduler Based on Keys
+RequestScheduler='DIRECT'// employ "DIRECT" request scheduler
+CommandGenerator='OPEN'  // employ "OPEN" command generator
+CommandScheduler='ORP'   // employ "ORP" command scheduler
+
+```
+
+The queue configuration can be associated based on the memory hierarchy (channel, rank, bankgroup, bank, subarray) OR it can be per requestor such that each master entity in the system has its own separate queue structure. This configuration is similar between command and request queue structure. 
+
 # MCsim Output Modes 
 
 In order to track the command trace and request trace that are scheduled from any MC, there exists the following flags in the makefile. 
@@ -97,7 +115,7 @@ Since the sample memory traces are generated without considering allocating to i
         Enable -DMULTI_RANK_BANK_PRIVATIZATION
 
 # Core Configuration
-MCsim supports criticality for cores and also is able to simulate in-order and out-of-order execution. The core(requestor) criticality and execution modes also require manual assignment in the main.cpp, as well as request size. For each requestor, there are three parameters
+MCsim supports criticality for cores and also is able to simulate in-order and out-of-order execution. The core(requestor) criticality and execution modes also require manual assignment in the main.cpp and memorycontroller class, as well as request size. For each requestor, there are three parameters
 ```
 bool inOrder = true;        // If the requestor is executing memory request in order
 bool isHRT = true;          // If the requestor is more critical than the others
