@@ -34,6 +34,39 @@ MultiChannelMemorySystem::MultiChannelMemorySystem(unsigned int numberRequestors
 	tCK = channels[0]->memDev->get_constraints("tCK");
 }
 
+MultiChannelMemorySystem::MultiChannelMemorySystem(unsigned int numberRequestors_, const string &systemIniFilename_, const string &deviceGene_, const string &deviceSpeed_, const string &deviceSize_, unsigned int channels_, unsigned int ranks_, function<void(Request&)> callback)
+	:numberRequestors(numberRequestors_),
+	systemIniFilename(systemIniFilename_),
+	deviceGene(deviceGene_),
+	deviceSpeed(deviceSpeed_),
+	deviceSize(deviceSize_),
+	numberChannels(channels_),
+	numberRanks(ranks_),
+	clockDomainCrosser(new ClockDomain::Callback<MultiChannelMemorySystem, void>(this, &MultiChannelMemorySystem::actual_update))
+{
+	clockCycle=0; 
+
+
+	if (numberChannels == 0) 
+	{
+		cout<<"\nERROR: Zero channels"; 
+		abort(); 
+	}
+	for (size_t i=0; i<numberChannels; i++)
+	{
+		MemorySystem *channel = new MemorySystem(numberRequestors, i, systemIniFilename, deviceGene, deviceSpeed, deviceSize, numberRanks, callback);
+		channels.push_back(channel);
+	}
+	tCK = channels[0]->memDev->get_constraints("tCK");
+}
+
+
+float MultiChannelMemorySystem::getClk()
+{
+
+	return tCK;
+}
+
 void MultiChannelMemorySystem::setCPUClockSpeed(uint64_t cpuClkFreqHz)
 {
 	uint64_t mcsimClkFreqHz = (uint64_t)(1.0/(tCK*1e-9));
@@ -142,6 +175,26 @@ bool MultiChannelMemorySystem::addRequest(unsigned int requestorID, unsigned lon
 	return channels[channelNumber]->addRequest(requestorID, address, R_W, size); 
 }
 
+bool MultiChannelMemorySystem::isWriteModeFromController()
+{
+	return channels[0]->isWriteModeFromController();
+}
+unsigned int MultiChannelMemorySystem::generalBufferSize()
+{
+	return channels[0]->generalBufferSize();
+}
+void MultiChannelMemorySystem::flushWrite(bool sw)
+{
+	channels[0]->flushWrite(sw);
+}
+
+void MultiChannelMemorySystem::displayConfiguration()
+{
+	for (size_t i=0; i<numberChannels; i++)
+	{
+		channels[i]->displayConfiguration();
+	}
+}
 void MultiChannelMemorySystem::printStats(bool finalStats) {
 
 	

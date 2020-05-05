@@ -22,7 +22,7 @@ namespace MCsim{
 					{					
 						if(isSchedulable(scheduledRequest,isRowHit(scheduledRequest))) // Determine if the request target is an open row or not
 						{ 							
-							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row); // Update the open row table for the device																				
+							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row); // Update the open row table for the device
 							requestQueue[index]->removeRequest(); // Remove the request that has been choosed							
 						}
 					}	

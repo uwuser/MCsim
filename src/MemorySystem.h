@@ -23,10 +23,14 @@ class MemorySystem : public SimulatorObject
 public:
 	//functions
 	MemorySystem(unsigned int numRequestors, unsigned id, const string &systemIniFilename, const string &deviceGene,  const string &deviceSpeed, const string &deviceSize, unsigned int ranks);
-
+	MemorySystem(unsigned int numRequestors, unsigned id, const string &systemIniFilename, const string &deviceGene,  const string &deviceSpeed, const string &deviceSize, unsigned int ranks, function<void(Request&)> callback);
 	virtual ~MemorySystem();
 	void update();
 	bool addRequest(unsigned int requestorID, unsigned long long address, bool R_W, unsigned int size);
+	void flushWrite(bool sw);
+	bool isWriteModeFromController();
+	unsigned int generalBufferSize();
+	void displayConfiguration();
 	void printStats(bool finalStats);
 	
 	void RegisterCallbacks(

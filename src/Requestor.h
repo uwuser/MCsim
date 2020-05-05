@@ -7,7 +7,8 @@
 #include <vector>
 #include <math.h>
 #include "Requestor.h"
-#include "MemoryController.h"
+//&#include "MemoryController.h"
+#include "MultiChannelMemorySystem.h"
 #include "RequestQueue.h"
 #include "RequestScheduler.h"
 #include "CommandGenerator.h"
@@ -17,7 +18,7 @@ using namespace std;
 
 namespace MCsim
 {
-	class MemoryController;
+	class MultiChannelMemorySystem;
 	class CommandGenerator;
 	class RequestScheduler;
 	class RequestQueue;
@@ -49,7 +50,7 @@ namespace MCsim
 		Requestor(int id, bool inOrder, const string& traceFile);
 		virtual ~Requestor();
 
-		void connectMemoryController(MemoryController* memCtrl);
+		void connectMemorySystem(MultiChannelMemorySystem* memSys);
 		void setMemoryClock(float clk);
 		void sendRequest(Request* request);
 		void returnData(Request* returnData);
@@ -78,7 +79,7 @@ namespace MCsim
 		unsigned long rowMissAddr;
 		unsigned long currAddr;
 		bool inOrder;
-		MemoryController* memoryController;
+		MultiChannelMemorySystem* memorySystem;
 		RequestScheduler* requestSCHEDULER;
 		Cache* localCache;
 

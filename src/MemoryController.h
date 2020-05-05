@@ -29,6 +29,7 @@ namespace MCsim
 		// systemConfigFile includes info on memory channel and memory controller architecture
 		MemoryController(const string& systemConfigFile, function<void(Request&)> callback);
 		MemoryController(MemorySystem *ms, const string& systemConfigFile);
+		MemoryController(MemorySystem *ms, const string& systemConfigFile, function<void(Request&)> callback);
 		virtual ~MemoryController();
 		void displayConfiguration();
 		void setRequestor(unsigned int id, bool criticality);

@@ -5,7 +5,6 @@
 #include "MemorySystem.h"
 
 using namespace MCsim;
-
 MemoryController::MemoryController(const string& systemConfigFile, function<void(Request&)> callback):
 callback(callback)
 {
@@ -36,9 +35,9 @@ callback(callback)
 	stats.closeRead_Latency = 0;
 	stats.openWrite_Latency = 0;
 	stats.closeWrite_Latency = 0;
+	//memorySystem = NULL;
 	memoryDevice = NULL;
 }
-
 
 MemoryController::MemoryController(MemorySystem *ms, const string& systemConfigFile)
 
@@ -72,7 +71,42 @@ MemoryController::MemoryController(MemorySystem *ms, const string& systemConfigF
 	stats.closeRead_Latency = 0;
 	stats.openWrite_Latency = 0;
 	stats.closeWrite_Latency = 0;
-	myTrace.open ("trace.txt");
+	memoryDevice = NULL;
+}
+
+MemoryController::MemoryController(MemorySystem *ms, const string& systemConfigFile, function<void(Request&)> callback):
+callback(callback)
+
+{
+	
+	// assign values to parameters based on configuration file
+	readConfigFile(systemConfigFile);
+
+	parentMemorySystem = ms;
+	//Initialize flow control
+	clockCycle = 0;
+	incomingRequest = NULL;
+	outgoingData = NULL;
+	outgoingCmd = NULL;
+
+	// Initialize statistic info
+	// ============ Stats Tracker ===================
+	stats.totalRequest = 0;
+	stats.openRead = 0;
+	stats.closeRead = 0;
+	stats.openWrite = 0;
+	stats.closeWrite = 0;
+	stats.readBytes = 0;
+	stats.writeBytes = 0;
+	stats.close = 0;
+	stats.open = 0;
+	stats.closeRequest = true;
+	stats.open_counter = 0;
+	stats.close_counter = 0;
+	stats.openRead_Latency = 0;
+	stats.closeRead_Latency = 0;
+	stats.openWrite_Latency = 0;
+	stats.closeWrite_Latency = 0;
 	memoryDevice = NULL;
 }
 
@@ -115,12 +149,12 @@ void MemoryController::connectMemoryDevice(MemoryDevice* memDev) {
 	
 	unsigned int numberRequestors;
 	bool isHRT = false;
-	//numberRequestors = parentMemorySystem->numberRequestors;
+	numberRequestors = parentMemorySystem->numberRequestors;
 	for(unsigned int id = 0; id < numberRequestors; id++) {
-
-		if (id <numberRequestors/2)
+		if (id == 0)
 			isHRT = true;
-		
+		else
+			isHRT = true;	
 		setRequestor(id, isHRT);
 	}
 	// construct the request and command queues
@@ -236,8 +270,6 @@ void MemoryController::update()
 			abort();
 		}
 	}
-	//if(!commandScheduler->refreshing())
-	//{
 	commandScheduler->refresh();
 	outgoingCmd = commandScheduler->commandSchedule();
 	if(outgoingCmd != NULL)
@@ -256,20 +288,10 @@ void MemoryController::update()
 				sendDataCounter.push_back(memoryDevice->get_constraints("tWL")+memoryDevice->get_constraints("tBus"));
 			}
 		}
-		// commandScheduler->commandClear();
 	}
 	delete outgoingCmd;
 	outgoingCmd = NULL;
-	//}
-	/*
-	else {
-		// If there is no more pending data to be sent out, start refreshing
-		if(sendDataBuffer.empty() && outgoingData == NULL) {
-			commandScheduler->refresh();			
-			DEBUG("REFRESHING");			
-		}
-	}
-	*/
+
 	if (sendDataCounter.size() > 0) {
 		if (sendDataCounter.front() == 0) {
 			outgoingData = sendDataBuffer.front();
@@ -296,7 +318,6 @@ void MemoryController::update()
 void MemoryController::receiveData(BusPacket *bpacket)
 {
 	stats.readBytes+=dataBusWidth;
-
 	// Checking with pending request
 	for(unsigned int index=0; index < pendingReadRequest.size(); index++) {
 		if(bpacket->requestorID == pendingReadRequest[index]->requestorID && 
@@ -375,20 +396,16 @@ void MemoryController::sendData(BusPacket* bpacket)
 }
 void MemoryController::returnReadData(const Request *req)
 {
-	
 	if (parentMemorySystem->ReturnReadData!=NULL)
 	{
-		
 		(*parentMemorySystem->ReturnReadData)(parentMemorySystem->systemID, req->address, clockCycle);
 	}
 }
 
 void MemoryController::writeDataDone(const Request *req)
 {
-	
 	if (parentMemorySystem->WriteDataDone!=NULL)
 	{
-		
 		(*parentMemorySystem->WriteDataDone)(parentMemorySystem->systemID,req->address, clockCycle);
 	}
 }

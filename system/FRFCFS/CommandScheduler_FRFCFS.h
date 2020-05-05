@@ -142,7 +142,7 @@ namespace MCsim
 				}
 				else
 				{
-					if(commandQueue[index]->getSize(true) > 0)
+					if(commandQueue[index]->getSize(true) > 0) // Assuming all requestors are HRT. Otherwise, SRT buffer command needs to be scheduled as well
 					{
 						checkCommand = commandQueue[index]->getCommand(true);
 						if(checkCommand != NULL)

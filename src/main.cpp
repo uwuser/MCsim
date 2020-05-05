@@ -11,7 +11,6 @@
 
 #include "Requestor.h"
 #include "Request.h"
-#include "MemoryController.h"
 #include "Ramulator_DDR3.h"
 #include "Ramulator_DDR4.h"
 #include "Ramulator_DSARP.h"
@@ -102,40 +101,16 @@ int main(int argc, char **argv)
 	}
 	
 	// Channel, MemoryController, Requestor
-	map<int, MemoryDevice*> channelsMap;
-	map<int, MemoryController*> controllersMap;
 	map<int, Requestor*> requestorsMap;
 	// Callback function pass complete request to requestor
 	auto callBack = [&requestorsMap](MCsim::Request& r) {
 		requestorsMap[r.requestorID]->returnData(&r);
 	};
+	MultiChannelMemorySystem *memorySystem = new MultiChannelMemorySystem(requestors, systemIniFilename, deviceGene,  deviceSpeed, deviceSize, channels, ranks,callBack);
+	
 	DEBUG("CHANNELS IN THE MEMORY SYSTEM:  "<<channels);
 	for(unsigned int c = 0; c < channels; c++) {
 		DEBUG("MEMORY CONTROLLER IS:   "<<systemIniFilename);
-		controllersMap[c] = new MemoryController(systemIniFilename, callBack);
-		MemoryDevice* memDev = NULL;
-		const string GeneSpeed = deviceGene + '_' + deviceSpeed;
-		const string GeneSize = deviceGene + '_' + deviceSize;
-		// New devices can be added here - ramulator interface for each devce needs to be added as well
-		if (deviceGene == "DDR3") {
-			DDR3* ddr3 = new DDR3(GeneSize, GeneSpeed);
-			memDev = new Ramulator_DDR3<DDR3>(ddr3, ranks);		
-		}
-		else if (deviceGene == "DDR4") {
-			DDR4* ddr4 = new DDR4(GeneSize, GeneSpeed);
-			memDev = new Ramulator_DDR4<DDR4>(ddr4, ranks);  		 			
-	    } 
-		else if (deviceGene == "DSARP") {
-			DSARP::Org test_org = DSARP::Org::DSARP_8Gb_x8; 	
-			DSARP* dsddr3_dsarp = new DSARP(test_org, DSARP::Speed::DSARP_1333, DSARP::Type::DSARP, 64);	 			
-			memDev = new Ramulator_DSARP<DSARP>(dsddr3_dsarp, ranks); 
-	    } 
-		else {
-			DEBUG("WRONG DRAM STANDARD");
-		}		
-		channelsMap[c] = memDev;
-		memDev->connectMemoryController(controllersMap[c]); 
-		controllersMap[c]->connectMemoryDevice(memDev);
 	}
 	ifstream memTrace;
 	memTrace.open(traceFileName.c_str());
@@ -144,7 +119,6 @@ int main(int argc, char **argv)
 		::exit(0);
 	}
 	bool inOrder = true;
-	bool isHRT = true;
 	int requestSize = 64;
 	string line;
 	for(unsigned int id = 0; id < requestors; id++) {
@@ -152,71 +126,57 @@ int main(int argc, char **argv)
 		switch(id)
 		{
 			case 0:
-				inOrder = true;
-				isHRT = true;
+				inOrder = false;
 				requestSize = 64;
 				break;
 			case 1:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 2:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 3:		
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 4:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 5:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 6:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			case 7:
 				inOrder = true;
-				isHRT = true;
 				requestSize = 64;
 				break;
 			default:
-				isHRT = true;
 				requestSize = 64;
 				break;
 		}
 		requestorsMap[id] = new Requestor(id, inOrder, line);
 		requestorsMap[id]->RequestSize = requestSize;
 		// Channel Assignment
-		int ch = (int)(id%channels);
-		requestorsMap[id]->connectMemoryController(controllersMap[ch]);
-		controllersMap[ch]->setRequestor(id, isHRT);
-		requestorsMap[id]->memoryClock = channelsMap[ch]->get_constraints("tCK");
+		requestorsMap[id]->connectMemorySystem(memorySystem);
+		
+		requestorsMap[id]->memoryClock = memorySystem->getClk();
 	}
 	memTrace.close();
 	
 	PRINT("\nStart Simulation");
-	for(unsigned int i=0; i<channels; i++) 
-	{
-		controllersMap[i]->displayConfiguration();
-	}
+	memorySystem->displayConfiguration();
 	/* Simple Requestor Simulation Engine	*/
 	uint64_t currentClockCyle = 1;
 	clock_t begin = clock();
 	bool simDone = false;
 	while(!simDone){
-		//if(cycles != 1 && currentClockCyle == cycles) {
 		if(cycles != 0 && currentClockCyle == cycles) {
 			simDone = true;}
 		 
@@ -228,27 +188,13 @@ int main(int argc, char **argv)
 				simDone = true;
 			}
 		}
-		// Step Memory System
-		for(unsigned int c=0; c < channels; c++) {
-			// Step MCsim
-			controllersMap[c]->update();
-			// Step DRAM Device
-			channelsMap[c]->update();
-		}			
+		memorySystem->update();	
 		currentClockCyle++;
 	}
 	clock_t end = clock();
-	// --- Memory Deallocation
-	for(unsigned int i=0; i<channels; i++) {
-		controllersMap[i]->printResult();
-		delete controllersMap[i];
-		controllersMap.erase(i);
-		delete channelsMap[i];
-		channelsMap.erase(i);
-	}
+	// print stats
+	memorySystem->printStats();
 
-	controllersMap.clear();
-	channelsMap.clear();
 	printf("-----------------------------------------Summary Per Requestor-------------------------------------------");
 	printf(" \n");
 	for(unsigned int i=0; i<requestors; i++) {

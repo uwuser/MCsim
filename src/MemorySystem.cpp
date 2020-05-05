@@ -49,6 +49,52 @@ MemorySystem::MemorySystem(unsigned int numRequestors_, unsigned id, const strin
 	memoryController->connectMemoryDevice(memDev);
 }
 
+MemorySystem::MemorySystem(unsigned int numRequestors_, unsigned id, const string &systemIniFilename_, const string &deviceGene_,  const string &deviceSpeed_, const string &deviceSize_, unsigned int ranks_, function<void(Request&)> callback) :
+		ReturnReadData(NULL),
+		WriteDataDone(NULL),
+		systemID(id),
+		numberRequestors(numRequestors_),
+		systemIniFilename(systemIniFilename_),
+		deviceGene(deviceGene_),
+		deviceSpeed(deviceSpeed_),
+		deviceSize(deviceSize_),
+		numberRanks(ranks_)
+
+
+{
+	
+	clockCycle = 0;
+
+	DEBUG("===== MemorySystem "<<systemID<<" =====");
+
+
+	memoryController = new MemoryController(this, systemIniFilename, callback);
+
+	const string GeneSpeed = deviceGene + '_' + deviceSpeed;
+	const string GeneSize = deviceGene + '_' + deviceSize;
+	if (deviceGene == "DDR3") {
+		DDR3* ddr3 = new DDR3(GeneSize, GeneSpeed);
+		memDev = new Ramulator_DDR3<DDR3>(ddr3, numberRanks);
+	}
+	else if (deviceGene == "DDR4") {
+			DDR4* ddr4 = new DDR4(GeneSize, GeneSpeed);
+			memDev = new Ramulator_DDR4<DDR4>(ddr4, numberRanks);  		 			
+	    } 
+	else if (deviceGene == "DSARP") {
+		DSARP::Org test_org = DSARP::Org::DSARP_8Gb_x8; 	
+		DSARP* dsddr3_dsarp = new DSARP(test_org, DSARP::Speed::DSARP_1333, DSARP::Type::DSARP, 64);	 			
+		memDev = new Ramulator_DSARP<DSARP>(dsddr3_dsarp, numberRanks); 
+	}  
+	else {
+		std::cout<<"Wrong DRAM standard"<<std::endl;
+	}
+
+	memDev->connectMemoryController(memoryController); 
+	memoryController->connectMemoryDevice(memDev);
+
+}
+
+
 MemorySystem::~MemorySystem()
 {
 	delete(memoryController);
@@ -72,10 +118,29 @@ bool MemorySystem::addRequest(unsigned int requestorID, unsigned long long addre
 	return memoryController->addRequest(requestorID, address, R_W, size); 
 }
 
+void MemorySystem::flushWrite(bool sw)
+{
+	memoryController->flushWrite(sw);
+}
+bool MemorySystem::isWriteModeFromController()
+{
+	return memoryController->isWriteModeFromController();
+}
+unsigned int MemorySystem::generalBufferSize()
+{
+	return memoryController->generalBufferSize();
+}
 //prints statistics
 void MemorySystem::printStats(bool finalStats)
 {
 	memoryController->printResult();
+}
+
+void MemorySystem::displayConfiguration()
+{
+
+	memoryController->displayConfiguration();
+
 }
 //update the memory systems state
 void MemorySystem::update()

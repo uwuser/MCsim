@@ -1,5 +1,4 @@
 #include "Requestor.h"
-#include "MemoryController.h"
 #include "RequestQueue.h"
 #include "RequestScheduler.h"
 #include "CommandGenerator.h"
@@ -16,9 +15,7 @@ Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	sim_done = false;
 	bypass_read= false;
 	currentClockCycle = 1; // Initial clock cycle
-	//currentClockCycle = 0; 
 	prevArrive = 1; // just for verification
-	//prevArrive = 0;
 	prevComplete = 0; // Finish time of the prev request from individual requestor
 	wcLatency = 0;
 	compTime = 0;
@@ -29,7 +26,7 @@ Requestor::Requestor(int id, bool inOrder, const string& traceFile):
 	latency = 0;
 	waitingRequest = false;
 
-	memoryController = NULL;
+	memorySystem = NULL;
 	pendingRequest = NULL;
 
 	hitRatioCtr = 10;
@@ -50,8 +47,8 @@ Requestor::~Requestor()
 	transFile.close();
 }
 
-void Requestor::connectMemoryController(MemoryController* memCtrl) {
-	memoryController = memCtrl;
+void Requestor::connectMemorySystem(MultiChannelMemorySystem* memSys) {
+	memorySystem = memSys;
 }
 
 void Requestor::setMemoryClock(float clk) {
@@ -63,7 +60,7 @@ void Requestor::sendRequest(Request* request) {
 	if(request->requestType == DATA_WRITE) {
 		R_W = false;
 	}
-	if(memoryController->addRequest(request->requestorID, request->address, R_W, request->requestSize))
+	if(memorySystem->addRequest(request->requestorID, request->address, R_W, request->requestSize))
 	{		
 		// Adding the request to the memory controller
 		requestRequest++;
@@ -108,9 +105,9 @@ void Requestor::update()
 	sim_done = readingTraceFile();
 	if(pendingRequest != NULL) {
 		// Send the request if the arrival time is reached
-		if (!memoryController->isWriteModeFromController())
+		if (!memorySystem->isWriteModeFromController())
 		{
-			if(pendingRequest->arriveTime <= currentClockCycle && memoryController->generalBufferSize() <= RequestBufferSize && corePendingData.size() <= RequestBufferSize) 
+			if(pendingRequest->arriveTime <= currentClockCycle && memorySystem->generalBufferSize() <= RequestBufferSize && corePendingData.size() <= RequestBufferSize) 
 			{
 				sendRequest(pendingRequest);
 				pendingRequest = NULL;			
@@ -120,7 +117,7 @@ void Requestor::update()
 	else
 	{
 		if(bypass_read){
-			memoryController->flushWrite(true);			
+			memorySystem->flushWrite(true);			
 		}
 	}
 	if(!corePendingData.empty()){
