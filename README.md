@@ -36,7 +36,7 @@ MCsim requires a C++11 compiler (e.g., clang++, g++-5). To build an optimized MC
 ```
  $ cd MCsim
  $ make 
- $ ./MCsim -t Mem_Trace/<trace.trc> -s system/<system.ini> -c <cycles> -n <# of requestors> -R <# of ranks> -D <device>
+ $ ./MCsim -n <# of requestors> -s system/<system.ini> -G <DeviceType> -D <DeviceSpeed> -S <DeviceSize> -R <# of ranks> -t Mem_Trace/<trace.trc>  -c <cycles>  
 ```
 In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the makefile. There exists option to run the simulation as follows.
 
