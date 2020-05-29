@@ -24,7 +24,7 @@ namespace MCsim
 				CAS = WRA;
 			}
 			unsigned id = request->requestorID;
-			unsigned address = request->address;
+			unsigned long long address = request->address;
 			unsigned rank = request->rank;
 			unsigned bank = request->bank;
 			unsigned row  = request->row;

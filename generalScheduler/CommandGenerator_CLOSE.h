@@ -28,7 +28,7 @@ namespace MCsim
 				CAS = WRA;
 			}
 			unsigned id = request->requestorID;
-			unsigned address = request->address;
+			unsigned long long address = request->address;
 			unsigned rank = request->rank; //  Can be disabled (0) if there is one rank			
 			unsigned row = request->row;
 			unsigned col = request->col;
