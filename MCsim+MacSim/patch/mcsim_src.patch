@@ -1,0 +1,11 @@
+--- MultiChannelMemorySystem.cpp	2012-04-09 12:45:52.562591519 -0400
++++ MultiChannelMemorySystem.cpp.new	2012-04-09 12:45:44.630021549 -0400
+@@ -235,7 +235,7 @@
+ 
+ 	mcsim_log.open(mcsimLogFilename.c_str(), ios_base::out | ios_base::trunc );
+ 
+-	if (!mcsim_log) 
++	if (!mcsim_log.is_open()) 
+ 	{
+ 	ERROR("Cannot open "<< mcsimLogFilename);
+ 	//	exit(-1); 

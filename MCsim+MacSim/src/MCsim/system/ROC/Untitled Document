@@ -1,0 +1,84 @@
+#ifndef REQUESTSCHEDULER_FCFS_H
+#define REQUESTSCHEDULER_FCFS_H
+
+#include <queue>
+
+#include "../RequestScheduler.h"
+
+namespace Memulator{
+	class RequestScheduler_FCFS: public RequestScheduler{
+	private:
+		vector<unsigned int> requestorIndex;
+		unsigned int numIndex;
+	public:
+		RequestScheduler_FCFS(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable, int dataBus): 
+			RequestScheduler(requestQueues, commandQueues, requestorTable) 
+		{
+			
+			for(unsigned int index = 0; index < requestQueue.size(); index++) {
+				requestorIndex.push_back(0);
+			}
+		}
+		void requestSchedule()
+		{
+			cout<<"inside the request scheudler"<<endl;
+			scheduledRequest = NULL;
+			checkRequest = NULL;
+			for(size_t index=0; index<requestQueue.size(); index++) 
+			{
+				if(requestQueue[index]->isPerRequestor()) 
+				{
+					for(unsigned int num=1; num < requestQueue[index]->getQueueSize(); num++)	
+					{
+						//cout<<"1----------------  "<<requestQueue[index]->getQueueSize()<<endl;
+						if(requestQueue[index]->getSize(true,num) > 0)
+						{
+
+
+
+
+							//cout<<"2----------------  "<<requestQueue[index]->getSize(true,requestorIndex[index])<<endl;
+							checkRequest = requestQueue[index]->checkRequestIndex(requestorIndex[index], 0);
+							cout<<"222----------------  "<<endl;
+							if(checkRequest == NULL)
+							{
+								continue;
+							}
+							else
+							{
+								if(checkRequest->arriveTime > requestQueue[index]->checkRequestIndex(requestorIndex[index], num)->arriveTime)
+								{
+									cout<<"333----------------  "<<endl;
+									checkRequest = requestQueue[index]->checkRequestIndex(requestorIndex[index], num);
+									numIndex = num;
+								}
+							}
+					//	}
+					}		
+					if(checkRequest != NULL) 
+					{
+						scheduledRequest = requestQueue[index]->getRequest(requestorIndex[index],numIndex);
+						//cout<<"request is not null"<<endl;
+						if(isSchedulable(scheduledRequest, isRowHit(scheduledRequest))) 
+						{
+							cout<<"is schedulable  and is from  "<<scheduledRequest->requestorID<<"   and the address is  "<<scheduledRequest->address<<endl;
+							updateRowTable(scheduledRequest->addressMap[Rank], scheduledRequest->addressMap[Bank], scheduledRequest->row);
+							cout<<"check1"<<endl;
+							
+							cout<<"check2"<<endl;
+							requestQueue[index]->removeRequest();
+							cout<<"check3"<<endl;
+						}
+						else
+						{
+							scheduledRequest = NULL;
+						}
+					}
+				}
+				scheduledRequest = NULL;
+			}
+		}
+	};
+}
+
+#endif

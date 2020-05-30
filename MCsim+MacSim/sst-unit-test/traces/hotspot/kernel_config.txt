@@ -1,0 +1,2 @@
+-1 newptx
+/trace/ptx_opcode/rodinia_2.1/hotspot/_Z14calculate_tempiPfS_S_iiiiffffff_0/Trace.txt

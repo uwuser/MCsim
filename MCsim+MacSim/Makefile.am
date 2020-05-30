@@ -1,0 +1,88 @@
+#-*- Makefile -*-
+#
+#
+
+AM_CPPFLAGS = \
+	$(BOOST_CPPFLAGS) \
+	$(MPI_CPPFLAGS) \
+  -I$(srcdir)/src \
+  -I$(srcdir)/src/manifold/models/iris/interfaces \
+  -I$(srcdir)/src/manifold/models/iris/iris_srcs/components \
+  -I$(srcdir)/src/manifold/models/iris/iris_srcs/data_types \
+  -I$(srcdir)/src/manifold/models/iris/iris_srcs/topology \
+  -I$(srcdir)/src/manifold/kernel/include \
+  -I$(srcdir)/src/manifold/kernel/include/kernel \
+	-I$(srcdir)/src/orion \
+  -std=c++0x \
+	-DUSING_SST 
+
+
+SUBDIRS = scripts
+
+compdir = $(pkglibdir)
+comp_LTLIBRARIES = libmacsim.la
+libmacsim_la_SOURCES =                                        \
+macsimComponent.cpp          macsimComponent.h                         \
+                                                                       \
+src/all_knobs.cc             src/all_knobs.h                           \
+src/allocate.cc              src/allocate.h                            \
+src/allocate_smc.cc          src/allocate_smc.h                        \
+src/all_stats.cc             src/all_stats.h                           \
+src/assert_macros.h                                                    \
+src/bp.cc                    src/bp.h                                  \
+src/bp_gshare.cc             src/bp_gshare.h                           \
+src/bp_targ.cc               src/bp_targ.h                             \
+src/bug_detector.cc          src/bug_detector.h                        \
+src/cache.cc                 src/cache.h                               \
+src/config.h                                                           \
+src/core.cc                  src/core.h                                \
+src/debug_macros.h                                                     \
+src/dram.cc                  src/dram.h                                \
+src/exec.cc                  src/exec.h                                \
+src/factory_class.cc         src/factory_class.h                       \
+src/fetch_factory.cc         src/fetch_factory.h                       \
+src/frontend.cc              src/frontend.h                            \
+src/global_defs.h                                                      \
+src/global_types.h                                                     \
+src/inst_info.h                                                        \
+src/knob.cc                  src/knob.h                                \
+src/macsim.cc                src/macsim.h                              \
+src/main.cc                                                            \
+src/map.cc                   src/map.h                                 \
+src/memory.cc                src/memory.h                              \
+src/memreq_info.cc           src/memreq_info.h                         \
+src/noc.cc                   src/noc.h                                 \
+src/port.cc                  src/port.h                                \
+src/pqueue.h                                                           \
+src/pref.cc                  src/pref.h                                \
+src/pref_common.cc           src/pref_common.h                         \
+src/pref_factory.cc          src/pref_factory.h                        \
+src/pref_stride.cc           src/pref_stride.h                         \
+src/process_manager.cc       src/process_manager.h                     \
+src/readonly_cache.cc        src/readonly_cache.h                      \
+src/retire.cc                src/retire.h                              \
+src/rob.cc                   src/rob.h                                 \
+src/rob_smc.cc               src/rob_smc.h                             \
+src/schedule.cc              src/schedule.h                            \
+src/schedule_io.cc           src/schedule_io.h                         \
+src/schedule_ooo.cc          src/schedule_ooo.h                        \
+src/schedule_smc.cc          src/schedule_smc.h                        \
+src/statistics.cc            src/statistics.h                          \
+src/statsEnums.h                                                       \
+src/sw_managed_cache.cc      src/sw_managed_cache.h                    \
+src/trace_read.cc            src/trace_read.h                          \
+src/uop.cc                   src/uop.h                                 \
+src/utils.cc                 src/utils.h                               \
+src/router.cc                src/router.h                              \
+                                                                       \
+src/allocate_interface.h                                               \
+src/exec_interface.h                                                   \
+src/frontend_interface.h                                               \
+src/retire_interface.h                                                 \
+src/schedule_interface.h                                               
+
+
+EXTRA_DIST = 
+
+libmacsim_la_LDFLAGS = -module -avoid-version
+libmacsim_la_LIBADD = -lz
