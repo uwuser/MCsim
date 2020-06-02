@@ -294,6 +294,7 @@ dram_controller_c::dram_controller_c(macsim_c* simBase)
       2048); // 2048*4 = 4 ranks
 
 #endif
+// Connect to MCsim
 #ifdef MCSIM
 
   unsigned int num_cores = *m_simBase->m_knobs->KNOB_NUM_SIM_CORES;
