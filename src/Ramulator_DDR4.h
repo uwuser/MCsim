@@ -199,8 +199,10 @@ namespace MCsim
 							break;
 						case PRE:
 							time = channel->spec->speed_entry.nRTP;
+							break;
 						case PREA:
 							time = channel->spec->speed_entry.nRTP;
+							break;
 						default:
 							time = 1;
 							break;
@@ -228,8 +230,10 @@ namespace MCsim
 							break;
 						case PREA:
 							time = channel->spec->speed_entry.nCWL + 4 + channel->spec->speed_entry.nWR;
+							break;
 						case PRE:
 							time = channel->spec->speed_entry.nCWL + 4 + channel->spec->speed_entry.nWR;
+							break;
 						default:
 							time = 1;
 							break;
