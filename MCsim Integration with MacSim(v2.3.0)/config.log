@@ -1,0 +1,33 @@
+file /home/rmirosan/MCSIMULATOR/original_macsim/macsim-from-git-PIN/SConstruct,line 55:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for c++14 conformance...
+scons: Configure: ".sconf_temp/conftest_0.cpp" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_0.cpp <-
+  |  |
+  |  |    #include <vector>
+  |  |    #include <iostream>
+  |  |    #include <memory>
+  |  |  
+  |  |    using namespace std;
+  |  |
+  |  |    int main(void)
+  |  |    {
+  |  |      vector<int> test_vector(5);
+  |  |      int sum = 0;
+  |  |      for (auto itr = test_vector.begin(); itr != test_vector.end(); ++itr) {
+  |  |        sum += (*itr);
+  |  |      }
+  |  |      cout << sum;
+  |  |
+  |  |      unique_ptr<int> test_int = make_unique<int>(2347);
+  |  |      cout << *test_int;
+  |  |    }
+  |  |    
+  |
+scons: Configure: ".sconf_temp/conftest_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |/usr/bin/g++ -o .sconf_temp/conftest_0.o -c -std=c++14 .sconf_temp/conftest_0.cpp
+  |
+scons: Configure: (cached) yes
+

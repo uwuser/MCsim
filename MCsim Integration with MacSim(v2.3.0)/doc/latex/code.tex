@@ -1,0 +1,91 @@
+\chapter{\SIM Directory Structure and Source Code}
+
+
+\section{Directory Structure}
+
+The top-level source directory of \SIM contains several directories. The list of directories is following:
+
+\vspace{0.2in}
+\noindent
+\begin{footnotesize}
+\begin{tabular}{ll}
+\Verb+bin/+     & Build output directory                                                                                                                    \\
+\Verb+def/+     & Contains definitions of parameters (see Sections~\ref{sec:run} and~\ref{sec:knob}) and events for statistics (see Section~\ref{sec:stat}) \\
+\Verb+doc/+     & Contains \SIM documentation.                                                                                                              \\
+\Verb+params/+  & Contains sample parameter (see Sections~\ref{sec:run} and~\ref{sec:knob}) configuration files.                                            \\
+\Verb+scripts/+ & Contains scripts used in build of \SIM.                                                                                                                                           \\
+\Verb+src/+     & Contains \SIM source files (.cc and .h files).                                                                                                                                           \\
+\Verb+tools/+   & Contains x86 trace generator and trace reader.                                                                                                                                           \\
+\end{tabular}
+\end{footnotesize}
+
+\vspace{0.2in}
+Table~\ref{table:file_list} shows the list of source file and the purpose/content of
+each file.
+
+\begin{table}[htb]
+\begin{footnotesize}
+\begin{center}
+\caption{Source files and their purpose/content}
+\label{table:file_list}
+\begin{tabular}{|c||c|}
+\hline 
+File(s)                                                      & Purpose                            \\ \hline
+frontend.cc/h, fetch\_factory.cc/h, bp*.cc/h                 & Fetch stage                        \\ \hline 
+allocate*.cc/h, rob*.cc/h, map.cc/h                          & Decode and Allocate stages         \\ \hline
+schedule*.cc/h                                               & Schedule stage                     \\ \hline 
+exec.cc/h                                                    & Execution stage                    \\ \hline 
+retire.cc/h                                                  & Retire stage                       \\ \hline       
+port.cc/h, cache.cc/h dram.cc/h, memory*.cc/h, 				 & Memory system 					  \\ 
+memreq\_info.cc/h, readonly\_cache.cc/h, 					 & 									  \\ 
+sw\_managed\_cache.cc/h                                      & 				                      \\ \hline 
+pref*.cc/h                                                   & Prefetchers                        \\ \hline
+trace\_read.cc/h inst\_info.h                                & Reading traces                     \\ \hline
+core.cc/h                                                    & Class representing a core being simulated \\ \hline
+process\_manager.cc/h                                        & Process Manager/thread scheduler   \\ \hline 
+uop.cc/h                                                     & Uop structure and related enums    \\ \hline
+macsim.cc/h					                                 & Class containing pointers to the simulated cores, NoC, \\
+                                                             & memory system, knobs and other objects \\ \hline
+knob.cc/h                                                    & Classes for supporting knobs       \\ \hline
+statistics.cc/h                                              & Classes for supporting knobs       \\ \hline
+factory\_class.cc/h                                          & Implementation of different factory classes                          \\ \hline
+bug\_detector.cc/h                                           & Class useful for debugging forward progress errors happen             \\ \hline
+utils.cc/h                                                   & Utility classes and functions      \\ \hline
+debug\_macros.h                                              & Macros for debugging               \\ \hline
+assert\_macros.h                                             & Macros for assert statements with debug information                  \\ \hline
+global*.h                                                    & Forward declarations and typedefs  \\ \hline
+
+\end{tabular}
+\end{center}
+\end{footnotesize}
+\end{table}
+
+
+
+\ignore
+{
+\begin{table}[htb]
+\begin{footnotesize}
+\begin{center}
+\caption{Pipeline stage and the corresponding source files.}
+\label{table:pipeline}
+\begin{tabular}{|c||c|}
+\hline 
+pipeline stage         & file names                                             \\ \hline \hline 
+main simulator         & macsim.cc, core.cc                                     \\ \hline 
+fetch stage            & frontend.cc, fetch\_factory.cc, bp.cc, bp\_*.cc        \\ \hline 
+decode stage           & allocate.cc                                            \\ \hline 
+allocate stage         & allocate.cc, allocate\_*.cc, rob.cc, rob\_*.cc, map.cc \\ \hline 
+schedule stage         & schedule.cc, schedule\_*.cc                            \\ \hline 
+execution stage        & exec.cc                                                \\ \hline 
+retire stage           & retire.cc                                              \\ \hline 
+memory system          & port.cc, cache.cc *\_cache.cc, dram.cc, memory.cc      \\ \hline \hline
+other supporting files & statistics.cc, bug\_detector.cc                        \\ \hline \hline 
+process manager        & process\_manager.cc                                    \\ \hline 
+\end{tabular}
+\end{center}
+\end{footnotesize}
+\end{table}
+}
+
+

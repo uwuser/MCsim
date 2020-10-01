@@ -1,0 +1,70 @@
+####################################################################################################
+Interval
+####################################################################################################
+Cumulative:         Cycles:                  20000     Instructions:                  1200
+HMC_INST_COUNT_TOT                                              0                             0
+
+HMC_REMOVE_INST_COUNT_TOT                                       0                             0
+
+HMC_FENCE_INST_COUNT_TOT                                        0                             0
+
+HMC_INST_COUNT_CORE_0                                           0                             0
+
+HMC_UOP_COUNT_CORE_0                                            0                             0
+
+HMC_REMOVE_INST_COUNT_CORE_0                                    0                             0
+
+HMC_FENCE_INST_COUNT_CORE_0                                     0                             0
+
+HMC_ADD_OVERHEAD_COUNT_CORE_0                                   0                             0
+
+HMC_DEP_UOP_CYC_TOT_CORE_0                                      0                             0
+
+HMC_DEP_UOP_RETIRE_COUNT_CORE_0                                 0                             0
+
+HMC_INST_COUNT_CAS_equal_16B_CORE_0                             0                             0
+
+HMC_INST_COUNT_CAS_zero_16B_CORE_0                              0                             0
+
+HMC_INST_COUNT_CAS_greater_16B_CORE_0                           0                             0
+
+HMC_INST_COUNT_CAS_less_16B_CORE_0                              0                             0
+
+HMC_INST_COUNT_ADD_16B_CORE_0                                   0                             0
+
+HMC_INST_COUNT_ADD_8B_CORE_0                                    0                             0
+
+HMC_INST_COUNT_ADD_DUAL_CORE_0                                  0                             0
+
+HMC_INST_COUNT_SWAP_CORE_0                                      0                             0
+
+HMC_INST_COUNT_BIT_WR_CORE_0                                    0                             0
+
+HMC_INST_COUNT_AND_CORE_0                                       0                             0
+
+HMC_INST_COUNT_NAND_CORE_0                                      0                             0
+
+HMC_INST_COUNT_OR_CORE_0                                        0                             0
+
+HMC_INST_COUNT_XOR_CORE_0                                       0                             0
+
+HMC_INST_COUNT_FP_ADD_CORE_0                                    0                             0
+
+HMC_INST_COUNT_COMP_greater_CORE_0                              0                             0
+
+HMC_INST_COUNT_COMP_less_CORE_0                                 0                             0
+
+HMC_INST_COUNT_COMP_equal_CORE_0                                0                             0
+
+HMC_INST_COUNT_CANDIDATE_CORE_0                                 0                             0
+
+HMC_INST_COUNT_HOOK_CORE_0                                      0                             0
+
+HMC_INST_COUNT_UNHOOK_CORE_0                                    0                             0
+
+HMC_INST_COUNT_TRANS_BEG_CORE_0                                 0                             0
+
+HMC_INST_COUNT_TRANS_MID_CORE_0                                 0                             0
+
+HMC_INST_COUNT_TRANS_END_CORE_0                                 0                             0
+

@@ -1,0 +1,198 @@
+/*
+Copyright (c) <2012>, <Georgia Institute of Technology> All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted 
+provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions 
+and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this list of 
+conditions and the following disclaimer in the documentation and/or other materials provided 
+with the distribution.
+
+Neither the name of the <Georgia Institue of Technology> nor the names of its contributors 
+may be used to endorse or promote products derived from this software without specific prior 
+written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
+
+/* -*- Mode: c -*- */
+
+param<FE_SIZE, 						fe_size, 						uns32, 	256>
+
+param<SCHED_CLOCK, 					sched_clock, 					uns32, 	1>
+param<ALLOC_TO_EXEC_LATENCY, 		alloc_to_exec_latency, 			uns32, 	1>
+
+param<GIAQ_SIZE, giaq_size, uns32, 32>
+param<MIAQ_SIZE, miaq_size, uns32, 16>
+param<FQ_SIZE,   fq_size,   uns32, 32>
+param<SIAQ_SIZE, siaq_size, uns32, 32>
+
+param<GIAQ_MEDIUM_SIZE, giaq_medium_size, uns32, KNOB_GIAQ_SIZE>
+param<MIAQ_MEDIUM_SIZE, miaq_medium_size, uns32, KNOB_MIAQ_SIZE>
+param<FQ_MEDIUM_SIZE,   fq_medium_size,   uns32, KNOB_FQ_SIZE>
+param<SIAQ_MEDIUM_SIZE, siaq_medium_size, uns32, KNOB_SIAQ_SIZE>
+
+param<GIAQ_LARGE_SIZE, giaq_large_size, uns32, KNOB_GIAQ_SIZE>
+param<MIAQ_LARGE_SIZE, miaq_large_size, uns32, KNOB_MIAQ_SIZE>
+param<FQ_LARGE_SIZE,   fq_large_size,   uns32, KNOB_FQ_SIZE>
+param<SIAQ_LARGE_SIZE, siaq_large_size, uns32, KNOB_SIAQ_SIZE>
+
+param<GEN_ALLOCQ_INDEX,   giaq_index, int, 0>
+param<MEM_ALLOCQ_INDEX,   miaq_index, int, 1>
+param<FLOAT_ALLOCQ_INDEX, fiaq_index, int, 2>
+param<SIMD_ALLOCQ_INDEX,  siaq_index, int, 3>
+
+param<ONE_CYCLE_EXEC,           	one_cycle_exec,         		bool,   0>
+
+param<MAX_INSTS, 					max_insts, 						uns32, 	1000>
+param<SIM_CYCLE_COUNT, 				sim_cycle_count, 				uns32, 	1000000>
+
+param<FORWARD_PROGRESS_LIMIT, 		forward_progress_limit, 		uns64,  100000>
+
+param<MAX_BLOCK_PER_CORE_SUPER, max_block_per_core_super, int, 0>
+
+    // MT fetch throttling 
+
+param<ROB_SIZE, 					rob_size, 						uns16, 	128>
+param<ROB_MEDIUM_SIZE, 				rob_medium_size, 				uns16, 	KNOB_ROB_SIZE>
+param<ROB_LARGE_SIZE, 				rob_large_size, 				uns16, 	KNOB_ROB_SIZE>
+param<INT_REGFILE_SIZE, 			int_regfile_size, 				uns16, 	128>
+param<FP_REGFILE_SIZE, 				fp_regfile_size, 				uns16, 	128>
+param<MEU_NSB, 						meu_nsb, 						uns16, 	64>
+param<MEU_NLB, 						meu_nlb, 						uns16, 	64>
+param<MEU_MEDIUM_NSB, 				meu_medium_nsb, 				uns16, 	KNOB_MEU_NSB>
+param<MEU_MEDIUM_NLB, 				meu_medium_nlb, 				uns16, 	KNOB_MEU_NLB>
+param<MEU_LARGE_NSB, 				meu_large_nsb, 					uns16, 	KNOB_MEU_NSB>
+param<MEU_LARGE_NLB, 				meu_large_nlb, 					uns16, 	KNOB_MEU_NLB>
+
+param<WIDTH, 						width, 							uns16, 	2>
+param<MEDIUM_WIDTH, 				medium_width, 					uns16, 	KNOB_WIDTH>
+param<LARGE_WIDTH, 					large_width, 					uns16, 	KNOB_WIDTH>
+
+param<EXEC_RETIRE_LATENCY,      	exec_retire_latency,    		int,    1> 
+
+
+param<MEM_OBEY_STORE_DEP,       	mem_obey_store_dep,    			bool,   true>
+param<MEM_OOO_STORES,           	mem_ooo_stores,        			bool,	true> 
+
+
+
+param<USE_NEW_ORACLE,           	use_new_oracle,         		bool,   false> 
+param<IGNORE_DEP,               	ignore_dep,             		bool,   false>
+
+/* Jaekyu / added for heartbeat / 07/17/2008 */
+
+param<HEARTBEAT_INTERVAL,       	heartbeat_interval,     		uns,    false>
+
+param<GPU_FETCH_RATIO,                      fetch_ratio,                            int,    1> 
+param<GPU_SCHEDULE_RATIO,                   schedule_ratio,                         int,    1> 
+
+param<CPU_FETCH_RATIO,                      cpu_fetch_ratio,                            int,    1> 
+
+param<PTX_EXEC_RATIO,                   ptx_exec_ratio,                     int,         4>
+param<PTX_INST_LATENCY,                 ptx_inst_latency,                   int,         20>
+param<PTX_DISPATCH_LATENCY_FACTOR,      ptx_dispatch_latency_factor,        int,         2>
+
+param<NUM_SIM_CORES, 				num_sim_cores, 					int, 	80>
+param<CORE_TYPE, core_type, string, x86>
+param<MEDIUM_CORE_TYPE, medium_core_type, string, x86>
+param<LARGE_CORE_TYPE, large_core_type, string, x86>
+
+param<NUM_SIM_SMALL_CORES,  num_sim_small_cores, 	  int, 	KNOB_NUM_SIM_CORES>
+param<NUM_SIM_LARGE_CORES, 	num_sim_large_cores, 		int, 	0>
+param<NUM_SIM_MEDIUM_CORES, num_sim_medium_cores, 	int, 	0>
+
+param<MAX_THREADS_PER_CORE,     	  max_threads_per_core,   		int,    3>
+param<MAX_THREADS_PER_MEDIUM_CORE,  max_threads_per_medium_core,   	int,    KNOB_MAX_THREADS_PER_CORE>
+param<MAX_THREADS_PER_LARGE_CORE,   max_threads_per_large_core,   	int,    KNOB_MAX_THREADS_PER_CORE>
+
+param<SCHEDULE,                 	schedule,          				string, io> 
+param<MEDIUM_CORE_SCHEDULE, medium_core_schedule, string, io>
+param<LARGE_CORE_SCHEDULE, large_core_schedule, string, io>
+
+param<FETCH_LATENCY, 				fetch_latency, 					uns32, 	1>
+param<ALLOC_LATENCY, 				alloc_latency, 					uns32, 	1>
+
+param<MEDIUM_CORE_ALLOC_LATENCY, 				medium_core_alloc_latency, 					uns32, 	1>
+param<MEDIUM_CORE_FETCH_LATENCY, 				medium_core_fetch_latency, 					uns32, 	1>
+
+param<LARGE_CORE_ALLOC_LATENCY, 				large_core_alloc_latency, 					uns32, 	1>
+param<LARGE_CORE_FETCH_LATENCY, 				large_core_fetch_latency, 					uns32, 	1>
+
+param<PRINT_HEARTBEAT, print_heartbeat, bool, true>
+
+param<GPU_SCHED, gpu_sched, bool, false>
+param<GPU_USE_SINGLE_ALLOCQ_TYPE, gpu_use_single_iaq_type, bool, true>
+param<GPU_SHARE_ALLOCQS_BETWEEN_THREADS, gpu_share_iaqs_between_threads, bool, true>
+param<MAX_WARP_PER_SM, max_warp_per_sm, int, 48>
+param<SP_PER_SM, sp_per_sm, int, 32>
+param<SFU_PER_SM, sfu_per_sm, int, 4>
+param<LDST_PER_SM, ldst_per_sm, int, 16>
+
+
+param<32_64_ISA, 32_64_isa, int, 32>
+param<PHY_ADDR_WIDTH, phy_addr_width, int, 32>
+
+param<FEATURE_SIZE, feature_size, int, 32>
+param<PCIE_BUS_SIZE, pcie_bus_size, int, 1>
+param<PCIE_TR, pcie_tr, int, 16>
+param<PCIE_INIT, pcie_init, int, 33250>
+
+
+// for power config
+param<INST_LENGTH, inst_length, int, 32>
+param<OPCODE_WIDTH, opcode_width, int, 16>
+param<MICRO_OPCODE_WIDTH, micro_opcode_width, int, 8>
+param<INST_BUF_SIZE, inst_buf_size, int, 32>
+param<DEC_STREAM_BUF_SIZE, dec_stream_buf_size, int, 16>
+param<FP_INST_WINDOW_SIZE, fp_inst_window_size, int, 64>
+param<RAS_SIZE, ras_size, int, 64>
+param<IFU_DUTY_CYCLE, ifu_duty_cycle, float, 1.0>
+param<LSU_DUTY_CYCLE, lsu_duty_cycle, float, 0.5>
+param<MEM_I_DUTY_CYCLE, mem_i_duty_cycle, float, 1.0>
+param<MEM_D_DUTY_CYCLE, mem_d_duty_cycle, float, 0.5>
+param<ALU_DUTY_CYCLE, alu_duty_cycle, float, 1.0>
+param<MUL_DUTY_CYCLE, mul_duty_cycle, float, 0.3>
+param<FPU_DUTY_CYCLE, fpu_duty_cycle, float, 0.3>
+param<ALU_CDB_DUTY_CYCLE, alu_cdb_duty_cycle, float, 1.0>
+param<MUL_CDB_DUTY_CYCLE, mul_cdb_duty_cycle, float, 0.3>
+param<FPU_CDB_DUTY_CYCLE, fpu_cdb_duty_cycle, float, 0.3>
+param<ICACHE_THROUGHPUT, icache_throughput, int, 8>
+param<DCACHE_THROUGHPUT, dcache_throughput, int, 3>
+param<L2_THROUGHPUT, l2_throughput, int, 8> 
+param<LLC_THROUGHPUT, llc_throughput, int, 16>
+param<L2_CLOCKRATE, l2_clockrate, float, 3.4>
+param<LLC_CLOCKRATE, llc_clockrate, float, 0.85>
+param<DRAM_CLOCKRATE, dram_clockrate, float, 0.2>
+param<IS_GPU, is_gpu, int, 0> 
+param<GPU_WIDTH, gpu_width, int, 32> 
+param<ORIG_PIPELINE_STAGES, orig_pipeline_stages, int, 20> 
+param<EI_DECODE_WIDTH, ei_decode_width, int, KNOB_LARGE_WIDTH> 
+param<EI_ISSUE_WIDTH, ei_issue_width, int, KNOB_LARGE_WIDTH> 
+param<EI_EXEC_WIDTH, ei_exec_width, int, KNOB_LARGE_WIDTH> 
+param<EI_COMMIT_WIDTH, ei_commit_width, int, KNOB_LARGE_WIDTH> 
+param<IS_FERMI, is_fermi, bool, 1>
+
+param<FENCE_ENABLE, fence_enable, bool, 0>
+param<FENCE_PREF_ENABLE, fence_pref_enable, bool, 0>
+param<ACQ_REL, acq_rel, bool, 0>
+param<USE_WB, use_wb, bool, 0>
+param<WB_SIZE, wb_size, int, 32>
+param<WB_FIFO, wb_fifo, bool, 0>
+param<QSIM_STATE, qsim_state, string, 'state.1'>
+param<QSIM_BENCH, qsim_bench, string, "">
+param<CORE_THREAD_SCHED, core_thread_sched, string, greedy>
+
+param<UOP_LATENCY_MAP, uop_latency_map, string, x86>

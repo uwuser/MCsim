@@ -1,0 +1,11 @@
+--- MultiChannelMemorySystem.cpp	2012-04-09 12:45:52.562591519 -0400
++++ MultiChannelMemorySystem.cpp.new	2012-04-09 12:45:44.630021549 -0400
+@@ -235,7 +235,7 @@
+ 
+ 	dramsim_log.open(dramsimLogFilename.c_str(), ios_base::out | ios_base::trunc );
+ 
+-	if (!dramsim_log) 
++	if (!dramsim_log.is_open()) 
+ 	{
+ 	ERROR("Cannot open "<< dramsimLogFilename);
+ 	//	exit(-1); 
