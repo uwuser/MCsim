@@ -1,6 +1,6 @@
 # MCsim: An Extensible DRAM Memory Controller Simulator
 
-MCsim is a cycle-accurate DRAM memory controller simulation platform designed in C++ that takes benefit of extensibility of classes. MCsim provides interface to connect with external hardware simulators such as CPU and memory system simulators. With virtual functions, MCsim provides a simple interface for designer to develop scheduling policy effectively without re-implementing the other parts of the hardware. MCsim suports many real-time and conventional scheduling policies in the controller designs such as:
+MCsim is a cycle-accurate DRAM memory controller simulation platform designed in C++ that takes benefit of the extensibility of classes. MCsim provides an interface to connect with external hardware simulators such as CPU and memory system simulators. With virtual functions, MCsim provides a simple interface for the designer to develop a scheduling policy effectively without re-implementing the other parts of the hardware. MCsim supports many real-time and conventional scheduling policies in the controller designs such as:
 
   * [REQBundle](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7939044)
   * [CMDBundle](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7383564) 
@@ -26,7 +26,7 @@ MCsim reads the instruction traces from a file, and simulates a simplified model
 ```
 <addr> <read/write> <cpu-inst>
  ```
-The first token represents the address of the request. The second token accounts for the type of the access and the last token represnts the number of CPU instructions before the memory request
+The first token represents the address of the request. The second token accounts for the type of access and the last token represents the number of CPU instructions before the memory request
 
 # Building and Running MCsim - Standalone
 
@@ -38,7 +38,7 @@ MCsim requires a C++11 compiler (e.g., clang++, g++-5). To build an optimized MC
  $ make 
  $ ./MCsim -n <# of requestors> -s system/<system.ini> -G <DeviceType> -D <DeviceSpeed> -S <DeviceSize> -R <# of ranks> -t Mem_Trace/<trace.trc>  -c <cycles>  
 ```
-In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the makefile. There exists option to run the simulation as follows.
+In order to enable the DEBUG mode, simply uncomment DDEBUG_ENABLED flag in the makefile. There exists an option to run the simulation as follows.
 
 ```
 -t memory trace list that assigned to each requestor
@@ -55,13 +55,14 @@ In order to enable the DEBUG mode, simply un comment DDEBUG_ENABLED flag in the 
 
 # Building and Running MCsim - full-system simulation
 
-MCsim can be integrated in full-system simulators. We provide a library (libmcsim.so) in order to prepare the interfaces for the CPU simulators. After building the MCsim, follow: 
+MCsim can be integrated into full-system simulators. We provide a library (libmcsim.so) in order to prepare the interfaces for the CPU simulators. After building the MCsim, follow: 
 
 ```
  $ make libmcsim.so
 ```
  
 # Memory Controller Configurations
+
 A specific memory controller is built by a configuration file (system.ini}) to define the structure of the queues as well as the operation of each hardware block. As an example, we show the configuration for the ORP controller, which requires per requestor buffers and employs "DIRECT" request arbitration, "OPEN" command generation and a specific "ORP" command scheduling policy.
 
 ```
@@ -80,12 +81,12 @@ CommandScheduler='ORP'   // employ "ORP" command scheduler
 The queue configuration can be associated based on the memory hierarchy (channel, rank, bankgroup, bank, subarray) OR it can be per requestor such that each master entity in the system has its own separate queue structure. This configuration is similar between command and request queue structure. 
 
 # Develop a New MC
-To develop a new memory controller in MCsim, you need to write your imeplemetation in the system directory. This depend on which level you want to implement your code (requestScheduler, commandScheduler, or/and commandGenerator). Then, you need to specify your system.ini file which describe the structure of queues/address mapping and etc.
 
+To develop a new memory controller in MCsim, you need to write your implementation in the system directory. This depends on which level you want to implement your code (request scheduler, command scheduler, or/and command generator). Then, you need to specify your system.ini file, which describes the structure of queues/address mapping and etc.
 
 # MCsim Output Modes 
 
-In order to track the command trace and request trace that are scheduled from any MC, there exists the following flags in the makefile. 
+In order to track the command trace and request trace that is scheduled from any MC, there exist the following flags in the makefile.
 
 *  Printing the command trace:
 
@@ -96,6 +97,7 @@ In order to track the command trace and request trace that are scheduled from an
        Enable -DREQ_TRACE_ENABLED
 
 # Address Mapping Configuration
+
 Since the sample memory traces are generated without considering allocating to individual rank and bank, the user is supposed to manually reconfigure the address location in the AddressMapping class. The configuration is done through MAKEFILE compile options as follows:
 
 * Interleaved controllers (AMC, RTMem, PMC)
@@ -116,7 +118,9 @@ Since the sample memory traces are generated without considering allocating to i
         Enable -DMULTI_RANK_BANK_PRIVATIZATION
 
 # Core Configuration
-MCsim supports criticality for cores and also is able to simulate in-order and out-of-order execution. The core(requestor) criticality and execution modes also require manual assignment in the main.cpp and memorycontroller class, as well as request size. For each requestor, there are three parameters
+
+MCsim supports criticality for cores and also is able to simulate in-order and out-of-order execution. The core(requestor) criticality and execution modes also require manual assignment in the main.cpp and memorycontroller class, as well as request size. For each requestor, there are three parameters.
+
 ```
 bool inOrder = true;        // If the requestor is executing memory request in order
 bool isHRT = true;          // If the requestor is more critical than the others
@@ -165,12 +169,12 @@ In order to disable the refreshes, "none" can be chosed as refresh_mechanism.
 
 # Simulator Output
 
-Upon finishing a trace file from core under analysis (REQ0), the simulation will end and the stats will be printed. This includes the worst case latency of the READ/WRITE (open/close) requests as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flags. The debug format is consist of two format; one for the requests, and the other one for commands. Notice that, the stats assume that the cores are in order. In case of using OoO cores, the stats must be modified according to the WC definitions.  
+Upon finishing a trace file from core under analysis (REQ0), the simulation will end, and the stats will be printed. This includes the worst-case latency of the READ/WRITE (open/close) requests, as well as the simulation time and bandwidth. In order to track the operation of the controller at each clock cycle, you may enable the debug flags. The debug format is consists of two formats; one for the requests and the other one for commands. Notice that the stats assume that the cores are in order. In the case of using OoO cores, the stats must be modified according to the WC definitions.  
 
 
 # Validation
 
-In orther to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the dram mode simulation of ramulator we employed the MCsim_mapping.map as follows:
+In order to provide a fair comparison among MCsim, ramulator, and DRAMsim2 when evaluating FR-FCFS scheduler, we considered the following configurations. The address mapping of all simulators is RowBnkCol. In order to achieve this in the dram mode simulation of ramulator we employed the MCsim_mapping.map as follows:
 
 ```
 # Standard         DDR3
@@ -188,5 +192,4 @@ Ro 27:0 = 40:13
 Notice that, if the mapping flag is used in ramulator, the simulation time will be delayed significantly. In order to provide a fair comparison, we have implemented the address mapping in Memory.h where address translation is handled. 
 
 ```
-Notice that, for ramulator, all the print status activites must be disabled as they impose delay at run time. Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. For all simulators, we employed 32 entry queues for read and write request. For the purpose of verification, we have disabled the refresh mechanims for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the correspoding .ini file for this device according to the timing constraints from JEDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently the status counters are for RT MCs as they are concerecd with the worst case times.
-
+Notice that, for ramulator, all the print status activities must be disabled as they impose delay at run time. Regarding the DRAMsim2, we have implemented an extra scheme in the AddressMapping.cpp. For all simulators, we employed 32 entry queues for read and write requests. For the purpose of verification, we have disabled the refresh mechanisms for all the simulators. Since there is no DDR3 1600K device in the dramsim2, we have generated the corresponding .ini file for this device according to the timing constraints from JEDEC. Notice that in order to use the FR-FCFS or other mechanisms that require re-ordering in the request level, the in-order flag in main.cpp of MCsim should be set to false. In addition, currently, the status counters are for RT MCs as they are concerned with the worst-case times.
