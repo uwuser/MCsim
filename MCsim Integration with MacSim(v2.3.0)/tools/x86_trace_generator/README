@@ -1,3 +1,105 @@
+My own Steps: (rmirosan@uwaterloo.ca)
+
+
+1- Download the latest macsim and build
+2- Download the PIN 3.13 from https://software.intel.com/content/www/us/en/develop/articles/pin-a-binary-instrumentation-tool-downloads.html
+3- move it to the $x86_trace_generator
+4- move libzlib.a to /extra/xed-intel64/lib/
+5- go to source/tools and make
+6- if you see error like gcc-3.4 cannot be found, play with your export and the version of gcc/g++/cpp. I have checked the 7.5.0 works with macsim and the last step of trace generator but you might need 4.8 for this step
+7- change the makefile of trace generator as follows:
+
+CONFIG_ROOT := $(PIN_ROOT)/source/tools/Config
+
+
+
+
+include $(CONFIG_ROOT)/makefile.config
+
+include makefile.rules
+
+include $(TOOLS_ROOT)/Config/makefile.default.rules
+
+ 
+8- make the bashrc script variables as follows:
+ 
+export PIN_HOME=/home/rmirosan/MCSIMULATOR/original_macsim/macsim-from-git-PIN/tools/x86_trace_generator/pin-3.13-98189-g60a6ef199-gcc-linux
+export PATH=$PIN_HOME:$PATH
+export PIN_ROOT=$PIN_HOME
+9- now, make the trace generator
+10- go to the PIN directory and you can now run with:
+
+ ./pin -t ../obj-intel64/trace_generator.so -- ../hello_world/out_bin  -i X -a READ/WRITE or any argument
+
+Now if you want to just capture specific section of the code do the following:
+
+1- add the following before main:
+
+
+unsigned __attribute__ ((noinline)) SIM_BEGIN(bool
+i)
+
+{
+
+if (i==false) return 0;
+
+printf("sim begin\n");
+
+return 1;
+
+}
+
+unsigned __attribute__ ((noinline)) SIM_END(bool
+i)
+
+{
+
+if (i==false) return 0;
+
+printf("sim end\n");
+
+return 1;
+
+} 
+
+
+2- add
+
+#include <stdbool.h>
+
+ 
+3- add
+
+SIM_BEGIN(1);
+
+before the section and
+ 
+ 
+
+SIM_END(1);
+
+after the section.
+ 
+
+4- Finally run the pin with the following: 
+ ./pin -t ../obj-intel64/trace_generator.so -manual 1 -thread 1  -- ../hello_world/out_bin -i iteration -i access (if bandwidth)
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 Please use Pin 3.13  (version number 56759) for the current trace generator 
 
 How to generate x86 traces
