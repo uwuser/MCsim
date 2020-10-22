@@ -34,7 +34,7 @@ MCsim requires a C++11 compiler (e.g., clang++, g++-5). To build an optimized MC
 
 
 ```
- $ cd MCsim
+ $ cd MCsim/src
  $ make 
  $ ./MCsim -n <# of requestors> -s system/<system.ini> -G <DeviceType> -D <DeviceSpeed> -S <DeviceSize> -R <# of ranks> -t Mem_Trace/<trace.trc>  -c <cycles>  
 ```
