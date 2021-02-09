@@ -6,17 +6,20 @@
 
 namespace MCsim
 {
-	class RequestScheduler_RTMem: public RequestScheduler_RR
+	class RequestScheduler_RTMem : public RequestScheduler_RR
 	{
 	public:
-		RequestScheduler_RTMem(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable, int dataBus): 
-			RequestScheduler_RR(requestQueues, commandQueues, requestorTable, dataBus) 
-		{}
-	private:
-		bool isSchedulable(Request* request, bool open) 
+		RequestScheduler_RTMem(std::vector<RequestQueue *> &requestQueues, std::vector<CommandQueue *> &commandQueues, const std::map<unsigned int, bool> &requestorTable, int dataBus) : RequestScheduler_RR(requestQueues, commandQueues, requestorTable, dataBus)
 		{
-			for(unsigned int index=0; index < commandQueue.size(); index++) {
-				if(commandQueue[index]->getSize(true) >= 2 || commandQueue[index]->getSize(false)>=2) {
+		}
+
+	private:
+		bool isSchedulable(Request *request, bool open)
+		{
+			for (unsigned int index = 0; index < commandQueue.size(); index++)
+			{
+				if (commandQueue[index]->getSize(true) >= 2 || commandQueue[index]->getSize(false) >= 2)
+				{
 					return false;
 				}
 			}
@@ -24,6 +27,6 @@ namespace MCsim
 			return true;
 		}
 	};
-}
+} // namespace MCsim
 
 #endif /* REQUESTSCHEDULER_RTMEM_H */

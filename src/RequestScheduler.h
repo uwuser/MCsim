@@ -16,7 +16,7 @@ namespace MCsim
 	class RequestScheduler
 	{
 	public:
-		RequestScheduler(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable);
+		RequestScheduler(std::vector<RequestQueue *> &requestQueues, std::vector<CommandQueue *> &commandQueues, const std::map<unsigned int, bool> &requestorTable);
 		virtual ~RequestScheduler();
 		void connectCommandGenerator(CommandGenerator *generator);
 		// Used to implement the request scheduling algorithm
@@ -24,46 +24,46 @@ namespace MCsim
 		void flushWriteReq(bool sw);
 		bool writeMode();
 		void step();
-		
+
 	protected:
 		unsigned long clockCycle;
 		// Table to track for criticality for scheduling (Copy of global tables)
-		const std::map<unsigned int, bool>& requestorCriticalTable;
+		const std::map<unsigned int, bool> &requestorCriticalTable;
 		// Connect to Request Queue and request buffer
-		const std::vector<RequestQueue*>& requestQueue;
-		const std::vector<CommandQueue*>& commandQueue;
+		const std::vector<RequestQueue *> &requestQueue;
+		const std::vector<CommandQueue *> &commandQueue;
 		// Connect to Command Generator
 		CommandGenerator *commandGenerator;
 		// Checking for commandQueue availability
-		virtual bool isSchedulable(Request* request, bool open);
+		virtual bool isSchedulable(Request *request, bool open);
 		// Find the First-Ready command [FCFS]
-		Request* scheduleFR(unsigned int qIndex);
-		Request* scheduleF(unsigned int qIndex);
-		Request* scheduleFR_Next(unsigned int qIndex);
-		Request* scheduleBLISS(unsigned int qIndex);
-		
+		Request *scheduleFR(unsigned int qIndex);
+		Request *scheduleF(unsigned int qIndex);
+		Request *scheduleFR_Next(unsigned int qIndex);
+		Request *scheduleBLISS(unsigned int qIndex);
+
 		// Open Row Checker
-		std::map< unsigned int, std::map< unsigned int, unsigned int long > > bankTable;
+		std::map<unsigned int, std::map<unsigned int, unsigned int long>> bankTable;
 		// Update open row
 		void updateRowTable(unsigned rank, unsigned bank, unsigned row);
-		bool isRowHit(Request* request);
+		bool isRowHit(Request *request);
 		bool writeEnable(int qIndex);
 		bool serviceWrite(int qIndex);
-		
+
 		unsigned int bufferSize(unsigned int qIndex);
 		bool switch_enable;
-		Request* scheduledRequest;
-		Request* scheduledRequest_temp;
+		Request *scheduledRequest;
+		Request *scheduledRequest_temp;
 		uint index_temp;
-		Request* checkRequest;
-		Request* req1;
-		Request* req2;
+		Request *checkRequest;
+		Request *req1;
+		Request *req2;
 		bool sw;
 		bool FR_open;
 		unsigned int id;
-		int blacklist [36];
+		int blacklist[36];
 		bool flag;
 	};
-}
+} // namespace MCsim
 
 #endif /* _REQUESTSCHEDULER_H */

@@ -5,7 +5,7 @@
 
 namespace MCsim
 {
-	class RequestScheduler_PMC: public RequestScheduler
+	class RequestScheduler_PMC : public RequestScheduler
 	{
 	private:
 		unsigned int requestorIndex;
@@ -15,8 +15,7 @@ namespace MCsim
 		vector<int> timeSlot;
 
 	public:
-		RequestScheduler_PMC(std::vector<RequestQueue*>&requestQueues, std::vector<CommandQueue*>& commandQueues, const std::map<unsigned int, bool>& requestorTable): 
-			RequestScheduler(requestQueues, commandQueues, requestorTable) 
+		RequestScheduler_PMC(std::vector<RequestQueue *> &requestQueues, std::vector<CommandQueue *> &commandQueues, const std::map<unsigned int, bool> &requestorTable) : RequestScheduler(requestQueues, commandQueues, requestorTable)
 		{
 			// The time slot must be calculated based on the device and pattern
 			// ex.DDR3-1600H: RCD + WL + Bus + WR + RP = 42
@@ -26,8 +25,9 @@ namespace MCsim
 
 		void requestSchedule()
 		{
-		
-			if(clockCycle == 1) {
+
+			if (clockCycle == 1)
+			{
 				scheduleSlot = {0, 1, 2, 3, 4, 5, 6, 7};
 				// for(int index=0; index<requestQueue.size(); index++) {
 				// 	scheduleSlot.push_back(index);
@@ -36,44 +36,53 @@ namespace MCsim
 				timeSlot = {47, 47, 47, 47, 47, 47, 47, 47};
 			}
 
-			if(slotCounter == 0) {
+			if (slotCounter == 0)
+			{
 				scheduledRequest = NULL;
-				for(unsigned int index=0; index < scheduleSlot.size(); index++) 
+				for (unsigned int index = 0; index < scheduleSlot.size(); index++)
 				{
-				
-					if(requestQueue[0]->getSize(true, scheduleSlot[requestorIndex]) > 0) {
-					
-						scheduledRequest = requestQueue[0]->getRequest(scheduleSlot[requestorIndex],0);
+
+					if (requestQueue[0]->getSize(true, scheduleSlot[requestorIndex]) > 0)
+					{
+
+						scheduledRequest = requestQueue[0]->getRequest(scheduleSlot[requestorIndex], 0);
 					}
 
-					if(scheduledRequest != NULL) {
-						
-						if(isSchedulable(scheduledRequest, false)) {
+					if (scheduledRequest != NULL)
+					{
+
+						if (isSchedulable(scheduledRequest, false))
+						{
 							requestQueue[0]->removeRequest();
-							slotCounter = timeSlot[scheduleSlot[requestorIndex]]-1;
+							slotCounter = timeSlot[scheduleSlot[requestorIndex]] - 1;
 						}
-						else{
-							DEBUG("ISSUE "<<requestorIndex);
+						else
+						{
+							DEBUG("ISSUE " << requestorIndex);
 							abort();
 						}
 					}
 					requestorIndex++;
-					if(requestorIndex == scheduleSlot.size()) {
+					if (requestorIndex == scheduleSlot.size())
+					{
 						requestorIndex = 0;
 					}
-					if(scheduledRequest != NULL) {
+					if (scheduledRequest != NULL)
+					{
 						scheduledRequest = NULL;
 						break;
 					}
 				}
 			}
-			else {
-				if(slotCounter > 0) {
+			else
+			{
+				if (slotCounter > 0)
+				{
 					slotCounter--;
 				}
 			}
 		}
 	};
-}
+} // namespace MCsim
 
 #endif /* REQUESTSCHEDULER_PMC_H */

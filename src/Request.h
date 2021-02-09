@@ -16,14 +16,14 @@ namespace MCsim
 	class Request
 	{
 	public:
-		Request(unsigned int id, RequestType requestType, unsigned int size, unsigned long long addr, void *data):
-			requestType(requestType),
-			requestorID(id),
-			requestSize(size),
-			address(addr),
-			data(data),
-			returnTime(0)
-		{}
+		Request(unsigned int id, RequestType requestType, unsigned int size, unsigned long long addr, void *data) : requestType(requestType),
+																													requestorID(id),
+																													requestSize(size),
+																													address(addr),
+																													data(data),
+																													returnTime(0)
+		{
+		}
 		// Fields
 		RequestType requestType;
 		unsigned int requestorID;
@@ -41,6 +41,6 @@ namespace MCsim
 		unsigned int addressMap[4];
 		// Rank, BankGroup, Bank, SubArray
 	};
-}
+} // namespace MCsim
 
 #endif /* REQUEST_H */

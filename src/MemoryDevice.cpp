@@ -4,9 +4,9 @@
 
 using namespace MCsim;
 
-MemoryDevice::MemoryDevice(unsigned int ranks): 
-	
-	ranks(ranks)
+MemoryDevice::MemoryDevice(unsigned int ranks) :
+
+												 ranks(ranks)
 {
 	clockCycle = 0;
 	bankGroups = 1;
@@ -29,13 +29,14 @@ MemoryDevice::~MemoryDevice()
 	pendingReadData.clear();
 }
 
-void MemoryDevice::connectMemoryController(MemoryController* memCtlr) {
+void MemoryDevice::connectMemoryController(MemoryController *memCtlr)
+{
 	memoryController = memCtlr;
 }
 
 unsigned int MemoryDevice::get_DataBus()
 {
-	return dataBusWidth*8;
+	return dataBusWidth * 8;
 }
 unsigned int MemoryDevice::get_Rank()
 {
@@ -58,26 +59,35 @@ unsigned long MemoryDevice::get_Column()
 	return columns;
 }
 
-void MemoryDevice::update() {
-	if(!pendingReadData.empty()) {
-		for(unsigned int index=0; index<dataCycles.size(); index++) {
-			if(dataCycles[index]>0) {
+void MemoryDevice::update()
+{
+	if (!pendingReadData.empty())
+	{
+		for (unsigned int index = 0; index < dataCycles.size(); index++)
+		{
+			if (dataCycles[index] > 0)
+			{
 				dataCycles[index]--;
 			}
 		}
-		if(dataCycles.front() == 0) {
+		if (dataCycles.front() == 0)
+		{
 			dataCycles.erase(dataCycles.begin());
 			memoryController->receiveData(pendingReadData.front());
 			pendingReadData.erase(pendingReadData.begin());
 		}
 	}
-	if(!postBuffer.empty()) {
-		for(unsigned int index=0; index<postBuffer.size(); index++) {
-			if(postCounter[index] > 0) {
+	if (!postBuffer.empty())
+	{
+		for (unsigned int index = 0; index < postBuffer.size(); index++)
+		{
+			if (postCounter[index] > 0)
+			{
 				postCounter[index]--;
 			}
 		}
-		if(postCounter.front() == 0) {
+		if (postCounter.front() == 0)
+		{
 			receiveFromBus(postBuffer.front());
 			delete postBuffer.front();
 			postCounter.erase(postCounter.begin());
@@ -87,16 +97,21 @@ void MemoryDevice::update() {
 	clockCycle++;
 }
 
-void MemoryDevice::generateData(BusPacket* cmd) {
-	if(cmd->busPacketType == DATA) {
+void MemoryDevice::generateData(BusPacket *cmd)
+{
+	if (cmd->busPacketType == DATA)
+	{
 		updateDataArray(cmd);
 	}
-	else {
-		if(cmd->busPacketType == RD || cmd->busPacketType == RDA) {
+	else
+	{
+		if (cmd->busPacketType == RD || cmd->busPacketType == RDA)
+		{
 			pendingReadData.push_back(new BusPacket(DATA, cmd->requestorID, cmd->address, 0, 0, 0, 0, 0, cmd->data, cmd->arriveTime));
 			dataCycles.push_back(get_constraints("tRL") + get_constraints("tBus"));
 		}
 	}
 }
-void MemoryDevice::updateDataArray(BusPacket* store) {
+void MemoryDevice::updateDataArray(BusPacket *store)
+{
 }

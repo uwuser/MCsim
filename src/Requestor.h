@@ -26,7 +26,7 @@ namespace MCsim
 	class Cache
 	{
 	public:
-		void add(unsigned long address, unsigned int size, void* data)
+		void add(unsigned long address, unsigned int size, void *data)
 		{
 			cache = std::make_pair(address, data);
 			lowAddr = address;
@@ -38,22 +38,23 @@ namespace MCsim
 			// else {return false;}
 			return false;
 		}
+
 	private:
 		unsigned long lowAddr;
 		unsigned long highAddr;
-		std::pair<unsigned long, void*> cache;
+		std::pair<unsigned long, void *> cache;
 	};
 
 	class Requestor
 	{
 	public:
-		Requestor(int id, bool inOrder, const string& traceFile);
+		Requestor(int id, bool inOrder, const string &traceFile);
 		virtual ~Requestor();
 
-		void connectMemorySystem(MultiChannelMemorySystem* memSys);
+		void connectMemorySystem(MultiChannelMemorySystem *memSys);
 		void setMemoryClock(float clk);
-		void sendRequest(Request* request);
-		void returnData(Request* returnData);
+		void sendRequest(Request *request);
+		void returnData(Request *returnData);
 		bool sim_end();
 		bool bypass_read;
 		void update();
@@ -79,29 +80,23 @@ namespace MCsim
 		unsigned long rowMissAddr;
 		unsigned long currAddr;
 		bool inOrder;
-		MultiChannelMemorySystem* memorySystem;
-		RequestScheduler* requestSCHEDULER;
-		Cache* localCache;
+		MultiChannelMemorySystem *memorySystem;
+		RequestScheduler *requestSCHEDULER;
+		Cache *localCache;
 
 		ifstream transFile;
 		bool waitingRequest;
 		bool readDone;
 		ofstream outTrace;
 
-		Request* pendingRequest;
-		std::vector< Request* > corePendingData;
+		Request *pendingRequest;
+		std::vector<Request *> corePendingData;
 
-
-			
 		bool sim_done;
 		bool readingTraceFile();
-		void parseTraceFileLine(string &line, uint64_t &addr, enum RequestType &requestType, 
-			uint64_t &compDelay, uint64_t &clockCycle);
+		void parseTraceFileLine(string &line, uint64_t &addr, enum RequestType &requestType,
+								uint64_t &compDelay, uint64_t &clockCycle);
 	};
-}
+} // namespace MCsim
 
 #endif
-
-
-
-

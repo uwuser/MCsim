@@ -9,4 +9,3 @@ void SimulatorObject::step()
 	clockCycle++;
 }
 
-

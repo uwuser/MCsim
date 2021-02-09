@@ -13,18 +13,18 @@ namespace MCsim
 	public:
 		CommandGenerator(unsigned int dataBus);
 		virtual ~CommandGenerator();
-		virtual bool commandGenerate(Request* request, bool open) = 0;
+		virtual bool commandGenerate(Request *request, bool open) = 0;
 
-		BusPacket* getCommand();
+		BusPacket *getCommand();
 		void removeCommand();
 		unsigned int bufferSize();
 
 	protected:
 		unsigned int dataBusSize;
-		bool first[8] = {true,true,true,true,true,true,true,true};
-		std::map<unsigned int, std::pair<unsigned int, unsigned int>>lookupTable;
-		std::queue< BusPacket* > commandBuffer;
+		bool first[8] = {true, true, true, true, true, true, true, true};
+		std::map<unsigned int, std::pair<unsigned int, unsigned int>> lookupTable;
+		std::queue<BusPacket *> commandBuffer;
 	};
-}
+} // namespace MCsim
 
 #endif /* COMMANDGENERATOR_H */

@@ -18,8 +18,7 @@ namespace MCsim
 	public:
 		MemoryDevice(unsigned int ranks);
 		virtual ~MemoryDevice();
-		void connectMemoryController(MemoryController* memCtlr);
-
+		void connectMemoryController(MemoryController *memCtlr);
 
 		void update();
 		unsigned int get_DataBus();
@@ -29,11 +28,11 @@ namespace MCsim
 		unsigned long get_Row();
 		unsigned long get_Column();
 
-		virtual float get_constraints(const std::string& parameter) = 0;
-		virtual long command_timing(BusPacket* command) = 0;
-		virtual unsigned int command_timing(BusPacket* command, int type) = 0;
-		virtual bool command_check(BusPacket* command) = 0;
-		virtual void receiveFromBus(BusPacket* busPacket) = 0;
+		virtual float get_constraints(const std::string &parameter) = 0;
+		virtual long command_timing(BusPacket *command) = 0;
+		virtual unsigned int command_timing(BusPacket *command, int type) = 0;
+		virtual bool command_check(BusPacket *command) = 0;
+		virtual void receiveFromBus(BusPacket *busPacket) = 0;
 
 	protected:
 		unsigned int clockCycle;
@@ -45,23 +44,23 @@ namespace MCsim
 		unsigned long columns;
 
 		unsigned int dataBusWidth;
-		MemoryController* memoryController;
+		MemoryController *memoryController;
 
 		std::vector<unsigned int> dataCycles;
-		std::vector<BusPacket*> pendingReadData;
-		
-		typedef std::map<unsigned int, std::map<unsigned int, long> > dataArray;
-		std::vector< std::vector< dataArray > > memoryArray;
+		std::vector<BusPacket *> pendingReadData;
 
-		std::vector<BusPacket*> postBuffer;
+		typedef std::map<unsigned int, std::map<unsigned int, long>> dataArray;
+		std::vector<std::vector<dataArray>> memoryArray;
+
+		std::vector<BusPacket *> postBuffer;
 		std::vector<int> postCounter;
-		
-		void updateDataArray(BusPacket* store);
 
-		void generateData(BusPacket* cmd);
+		void updateDataArray(BusPacket *store);
+
+		void generateData(BusPacket *cmd);
 
 		std::ofstream commandTrace;
 	};
-}
+} // namespace MCsim
 
 #endif
