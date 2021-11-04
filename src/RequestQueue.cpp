@@ -18,6 +18,7 @@ RequestQueue::RequestQueue(bool perRequestor, bool writeQueueEnable) : writeQueu
 	{
 		writeQueue = NULL;
 	}
+	setWriteMode(false);
 	generalBuffer = std::vector<Request *>();
 	requestorBuffer = std::map<unsigned int, std::vector<Request *>>();
 }

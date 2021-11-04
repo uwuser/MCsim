@@ -26,7 +26,6 @@ namespace MCsim
 		}
 		BusPacket *commandSchedule()
 		{
-			cout << "Command scheduler" << endl;
 			checkCommand = NULL;
 			for (unsigned int index = 0; index < commandQueue.size(); index++)
 			{
@@ -34,22 +33,17 @@ namespace MCsim
 				{
 					if (commandQueue[index]->getRequestorIndex() > 0) // There is more than 0 requestor in the design
 					{
-						cout << "1" << endl;
 						for (unsigned int num = 0; num < commandQueue[index]->getRequestorIndex(); num++) // For all requestors from "num"
 						{
-							cout << "2" << endl;
 							if (commandQueue[index]->getRequestorSize(num) > 0) // Return the buffer size of the requestor
 							{
-								cout << "3" << endl;
 								checkCommand = commandQueue[index]->getRequestorCommand(num);
 								if (queuePending.find(checkCommand->requestorID) == queuePending.end())
 								{
 									queuePending[checkCommand->requestorID] = false;
-								}
-								cout << "4" << endl;
+								}							
 								if (queuePending[checkCommand->requestorID] == false && isReady(checkCommand, index))
-								{
-									cout << "5" << endl;
+								{							
 									if (requestorCriticalTable.at(checkCommand->requestorID) == true)
 									{
 										cmdFIFO.push_back(std::make_pair(checkCommand, index));
@@ -57,8 +51,7 @@ namespace MCsim
 									else
 									{
 										cmdFIFO.push_back(std::make_pair(checkCommand, index));
-									}
-									cout << "6" << endl;
+									}								
 									queuePending[checkCommand->requestorID] = true;
 								}
 								checkCommand = NULL;
