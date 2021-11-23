@@ -1,6 +1,12 @@
 # MCsim: An Extensible DRAM Memory Controller Simulator
 
-MCsim is a cycle-accurate DRAM memory controller simulation platform designed in C++ that takes benefit of the extensibility of classes. MCsim provides an interface to connect with external hardware simulators such as CPU and memory system simulators. With virtual functions, MCsim provides a simple interface for the designer to develop a scheduling policy effectively without re-implementing the other parts of the hardware. MCsim supports many real-time and conventional scheduling policies in the controller designs such as:
+MCsim is a cycle-accurate DRAM memory controller simulation platform designed in C++ that takes benefit of the extensibility of classes. MCsim provides an interface to connect with external hardware simulators such as CPU and memory system simulators. With virtual functions, MCsim provides a simple interface for the designer to develop a scheduling policy effectively without re-implementing the other parts of the hardware. 
+
+f you use this simulator in your work, please consider cite:
+
+Mirosanlou, Reza and Guo, Danlu and Hassan, Mohamed and Pellizzoni, Rodolfo, "MCsim: An extensible dram memory controller simulator," in IEEE Computer Architecture Letters. [MCsim](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9137661)
+
+MCsim supports many real-time and conventional scheduling policies in the controller designs such as:
 
   * [REQBundle](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7939044)
   * [CMDBundle](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7383564) 
