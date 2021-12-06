@@ -1,0 +1,273 @@
+#!/usr/bin/python
+
+#########################################################################################
+# Author      : Jaekyu Lee (jq.lee17@gmail.com)
+# Description : Scons top-level
+#########################################################################################
+
+import os
+import glob
+
+
+#########################################################################################
+# Build option
+#########################################################################################
+Import('flags')
+
+
+#########################################################################################
+# FLAGS
+#########################################################################################
+
+
+## compiler warning flags
+warn_flags = [
+  '-Werror',
+#  '-Wunused-function',
+#  '-Wreturn-type',
+#  '-Wpointer-arith',
+  '-Wno-write-strings'
+]
+warn_flags = ' '.join(warn_flags)
+
+
+## Environment
+custom_vars = set(['AS', 'AR', 'CC', 'CXX', 'HOME', 'LD_LIBRARY_PATH', 'PATH', 'RANLIB'])
+custom_env  = {}
+
+for key,val in os.environ.iteritems():
+  if key in custom_vars:
+    custom_env[key] = val
+
+env = Environment(ENV=custom_env)
+
+env['CPPPATH']    = ['#src']
+env['CPPDEFINES'] = ['LONG_COUNTERS', 'NO_MPI']
+env['LINKFLAGS']  = ['--static']
+# env['CXX']        = ['icpc']
+
+
+## DEBUG build
+if flags['debug'] == '1':
+  env['CPPFLAGS'] = '-g -std=c++0x %s' % warn_flags
+## GPROF build
+elif flags['gprof'] == '1':
+  env['CPPFLAGS'] = '-pg -std=c++0x %s' % warn_flags
+  env['CPPDEFINES'].append('NO_DEBUG')
+  env['LINKFLAGS'].append('-pg')
+## OPT build
+else:
+  env['CPPFLAGS'] = '-O3 -std=c++0x -funroll-loops %s' % warn_flags
+  env['CPPDEFINES'].append('NO_DEBUG')
+
+if flags['val'] == '1':
+  env['CPPDEFINES'].append('GPU_VALIDATION')
+
+
+#########################################################################################
+# IRIS
+#########################################################################################
+IRIS_kernel_srcs = [
+  'src/manifold/kernel/src/clock.cc',
+  'src/manifold/kernel/src/component.cc',
+  'src/manifold/kernel/src/link.cc',
+  'src/manifold/kernel/src/manifold.cc',
+  'src/manifold/kernel/src/messenger.cc'
+]
+
+IRIS_srcs = [
+  'src/manifold/models/iris/iris_srcs/data_types/networkPacket.cc',
+  'src/manifold/models/iris/iris_srcs/data_types/flit.cc',
+  'src/manifold/models/iris/iris_srcs/data_types/linkData.cc',
+  'src/manifold/models/iris/iris_srcs/topology/twoNode.cc',
+  'src/manifold/models/iris/iris_srcs/topology/ring.cc',
+  'src/manifold/models/iris/iris_srcs/topology/mesh.cc',
+  'src/manifold/models/iris/iris_srcs/topology/torus.cc',
+  'src/manifold/models/iris/iris_srcs/topology/util.cc',
+  'src/manifold/models/iris/iris_srcs/components/genericBuffer.cc',
+  'src/manifold/models/iris/iris_srcs/components/genericRC.cc',
+  'src/manifold/models/iris/iris_srcs/components/genericSwitchArbiter.cc',
+  'src/manifold/models/iris/iris_srcs/components/genericVcAllocator.cc',
+  'src/manifold/models/iris/iris_srcs/components/manifoldProcessor.cc',
+  'src/manifold/models/iris/iris_srcs/components/ninterface.cc',
+  'src/manifold/models/iris/iris_srcs/components/simpleRouter.cc'
+]
+
+
+if flags['iris'] == '1':
+  if flags['power'] == '1':
+    env.Library('iris', IRIS_kernel_srcs + IRIS_srcs, CPPDEFINES=env['CPPDEFINES'] + ['POWER_EI', 'IRIS'])
+  else:
+    env.Library('iris', IRIS_kernel_srcs + IRIS_srcs, CPPDEFINES=env['CPPDEFINES'] + ['IRIS'])
+
+
+#########################################################################################
+# ORION
+#########################################################################################
+ORION_srcs = [
+  'src/orion/SIM_router.c',
+  'src/orion/SIM_arbiter.c',
+  'src/orion/SIM_crossbar.c',
+  'src/orion/SIM_router_power.c',
+  'src/orion/SIM_link.c',
+  'src/orion/SIM_clock.c',
+  'src/orion/SIM_router_area.c',
+  'src/orion/SIM_array_l.c',
+  'src/orion/SIM_array_m.c',
+  'src/orion/SIM_cam.c',
+  'src/orion/SIM_ALU.c',
+  'src/orion/SIM_misc.c',
+  'src/orion/SIM_permu.c',
+  'src/orion/SIM_static.c',
+  'src/orion/SIM_util.c',
+  'src/orion/SIM_time.c'
+]
+
+
+if flags['iris'] == '1':
+  env.Library('orion', ORION_srcs, CPPFLAGS='')
+
+
+#########################################################################################
+# EI
+#########################################################################################
+EI_srcs = [
+  'src/energy_introspector/parameters.cc',
+  'src/energy_introspector/parser.cc',
+  'src/energy_introspector/string_ops.cc',
+  'src/energy_introspector/energy_introspector.cc',
+  'src/energy_introspector/ENERGYLIB_McPAT.cc',
+  'src/energy_introspector/ENERGYLIB_IntSim.cc',
+  'src/energy_introspector/THERMALLIB_HotSpot.cc',
+  'src/energy_introspector/RELIABILITYLIB_RAMP.cc',
+  'src/energy_introspector/SENSORLIB_RNG.cc'
+]
+
+
+if flags['power'] == '1':
+  env.Library('ei', EI_srcs)
+
+
+#########################################################################################
+# DRAMSIM2
+#########################################################################################
+DRAMSIM2_srcs = glob.glob('src/DRAMSim2/*.cpp')
+DRAMSIM2_srcs.extend(glob.glob('src/DRAMSim2/DRAM/*.cpp'))
+
+
+if flags['dram'] == '1':
+  env.Library('dramsim', DRAMSIM2_srcs, CPPDEFINES=['NO_STORAGE', 'DEBUG_BUILD', 'LOG_OUTPUT'])
+
+#########################################################################################
+# MCSIM
+#########################################################################################
+MCSIM_srcs = glob.glob('src/MCsim/src/*.cpp')
+MCSIM_srcs.extend(glob.glob('src/MCsim/dram/*.cpp'))
+
+
+if flags['dram'] == '2':
+  env.Library('mcsim', MCSIM_srcs, CPPDEFINES=['NO_STORAGE', 'DEBUG_BUILD', 'LOG_OUTPUT'])
+#########################################################################################
+# MACSIM
+#########################################################################################
+macsim_src = [
+  'src/all_knobs.cc',
+  'src/all_stats.cc',
+  'src/allocate.cc',
+  'src/allocate_smc.cc',
+  'src/bp.cc',
+  'src/bp_gshare.cc',
+  'src/bp_targ.cc',
+  'src/bug_detector.cc',
+  'src/cache.cc',
+  'src/core.cc',
+  'src/dram.cc',
+  'src/exec.cc',
+  'src/factory_class.cc',
+  'src/fetch_factory.cc',
+  'src/frontend.cc',
+  'src/knob.cc',
+  'src/macsim.cc',
+  'src/main.cc',
+  'src/map.cc',
+  'src/memory.cc',
+  'src/memreq_info.cc',
+  'src/noc.cc',
+  'src/port.cc',
+  'src/pref.cc',
+  'src/pref_common.cc',
+  'src/pref_factory.cc',
+  'src/pref_stride.cc',
+  'src/process_manager.cc',
+  'src/readonly_cache.cc',
+  'src/retire.cc',
+  'src/rob.cc',
+  'src/rob_smc.cc',
+  'src/router.cc',
+  'src/schedule.cc',
+  'src/schedule_io.cc',
+  'src/schedule_ooo.cc',
+  'src/schedule_smc.cc',
+  'src/statistics.cc',
+  'src/sw_managed_cache.cc',
+  'src/trace_read.cc',
+  'src/uop.cc',
+  'src/utils.cc',
+]
+
+
+if flags['power'] == '1':
+  macsim_src.append('src/ei_power.cc')
+
+
+#########################################################################################
+# Libraries
+#########################################################################################
+libraries = ['z']
+
+
+if flags['power'] == '1':
+  libraries.append('ei')
+  libraries.append('pthread')
+  env['CPPDEFINES'].append('POWER_EI')
+
+if flags['dram'] == '1':
+  libraries.append('dramsim')
+  env['CPPDEFINES'].append('DRAMSIM')
+  env['CPPPATH'] += ['#src/DRAMSim2']
+  env['CPPPATH'] += ['#src/DRAMSim2/DRAM']
+  env['CPPPATH'] += ['#src/DRAMSim2/CommonScheduler']
+  env['CPPPATH'] += ['#src/DRAMSim2/System']
+
+if flags['dram'] == '2':
+  libraries.append('mcsim')
+  env['CPPDEFINES'].append('MCSIM')
+  env['CPPPATH'] += ['#src/MCsim/src']
+  env['CPPPATH'] += ['#src/MCsim/dram']
+  env['CPPPATH'] += ['#src/MCsim/generalScheduler']
+  env['CPPPATH'] += ['#src/MCsim/system']
+
+if flags['iris'] == '1':
+  libraries.append('iris')
+  libraries.append('orion')
+  env['CPPDEFINES'].append('IRIS')
+  env['CPPPATH'] += ['#src/manifold/kernel/include/kernel']
+  env['CPPPATH'] += ['#src/manifold/kernel/include']
+  env['CPPPATH'] += ['#src/manifold/models/iris/interfaces']
+  env['CPPPATH'] += ['#src/orion']
+
+
+env.Program(
+    'macsim',
+    macsim_src, 
+    LIBS=libraries, 
+    LIBPATH=['.', '/usr/lib', '/usr/local/lib']
+)
+
+
+#########################################################################################
+# Clean
+#########################################################################################
+if GetOption('clean'):
+  os.system('rm -f ../bin/macsim')
+

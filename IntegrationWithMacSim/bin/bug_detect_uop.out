@@ -1,0 +1,9 @@
+Current cycle:509999
+Core id:0
+Last terminated thread:0
+----------------------------------------------------------
+core 0
+average execution cycle: 0
+INST_NUM  UOP_NUM   TID       CYCLE          DELTA          STATE                    OPCODE                   UOP_TYPE            MEM_TYPE            CF_TYPE             DEP_TYPE            CHILD PARENT    
+
+

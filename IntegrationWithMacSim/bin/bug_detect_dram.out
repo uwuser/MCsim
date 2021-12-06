@@ -1,0 +1,23 @@
+Current cycle:170000
+Total req:0
+
+Data bus
+DBUS[0] bus_ready:18446744073709551615
+
+Each bank
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+clist:-1         scheduled:0 size:0     state:NULL            bank_ready:18446744073709551615 data_ready:18446744073709551615 data_avail:18446744073709551615 time:0
+bank_id:0
+bank_id:1
+bank_id:2
+bank_id:3
+bank_id:4
+bank_id:5
+bank_id:6
+bank_id:7

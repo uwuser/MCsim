@@ -1,0 +1,32 @@
+== How to build MacSim ==
+
+=== Requirement ===
+
+  SCons
+
+  * How to get SCons
+    Ubuntu --> apt-get install scons
+
+
+=== Build steps ===
+
+  ./build.py
+
+
+=== Build options ===
+
+  -j (--thread) : specify number of threads for parallel build
+  -d : debug build
+  -p : gprof build
+  -c : clean
+  --dramsim : using DRAMSim2
+  --mcsim : using MCsim
+  --power : using EnergyIntrospector for power model
+          (Please note that power model is currently available to only internal developers.)
+
+
+=== Build outcome ===
+
+  bin/macsim
+
+

@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
-
+cout<<"call back"<<endl;
 	// Channel, MemoryController, Requestor
 	map<int, Requestor *> requestorsMap;
 	// Callback function pass complete request to requestor

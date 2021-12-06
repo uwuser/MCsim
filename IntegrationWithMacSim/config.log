@@ -1,0 +1,29 @@
+file /home/rmirosan/MCSIMULATOR/git_MCsim/From_Mohamed/Integration With MacSim/SConstruct,line 51:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for c++0x conformance...
+scons: Configure: ".sconf_temp/conftest_0.cpp" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_0.cpp <-
+  |  |
+  |  |    #include <vector>
+  |  |    #include <iostream>
+  |  |  
+  |  |    using namespace std;
+  |  |
+  |  |    int main(void)
+  |  |    {
+  |  |      vector<int> test_vector(5);
+  |  |      int sum = 0;
+  |  |      for (auto itr = test_vector.begin(); itr != test_vector.end(); ++itr) {
+  |  |        sum += (*itr);
+  |  |      }
+  |  |      cout << sum << "\N";
+  |  |    }
+  |  |    
+  |
+scons: Configure: ".sconf_temp/conftest_0.o" is up to date.
+scons: Configure: The original builder output was:
+  |g++ -o .sconf_temp/conftest_0.o -c -std=c++0x .sconf_temp/conftest_0.cpp
+  |
+scons: Configure: (cached) yes
+
